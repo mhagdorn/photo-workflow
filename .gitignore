@@ -1,3 +1,6 @@
 *~
 *.pyc
 photo_workflow/__pycache__
+build/
+dist/
+photo_workflow.egg-info/
