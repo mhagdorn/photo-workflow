@@ -1,1 +1,3 @@
 *~
+*.pyc
+photo_workflow/__pycache__
