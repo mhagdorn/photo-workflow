@@ -5,6 +5,8 @@ import logging
 import re
 import shutil
 
+from .config import read_config
+
 def get_image_tags(image):
     tags = subprocess.check_output(['exiftool','-Subject',image])
     tags = tags.split(b':')[1]
@@ -32,12 +34,13 @@ def create_folder(indir,outprefix,glob='*.tif'):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i','--input-directory',default='/tmp',help='input directory to be searched for photos')
-    parser.add_argument('-o','--output-prefix',default='/tmp',help='where to create the output directory')
+    parser.add_argument('-c','--config',help='read configuration from file')
     args = parser.parse_args()
 
-    indir = Path(args.input_directory)
-    outprefix = Path(args.output_prefix)
+    cfg = read_config(args.config)
+
+    indir = Path(cfg['directories']['tempdir'])
+    outprefix = Path(cfg['directories']['tempdir'])
     for d in (indir,outprefix):
         if not d.is_dir():
             parser.error('no such directory {}'.format(d))

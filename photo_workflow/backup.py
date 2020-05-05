@@ -3,6 +3,8 @@ import argparse, sys
 import logging
 import shutil
 
+from .config import read_config
+
 logging.basicConfig(level=logging.DEBUG)
 
 def copy_projects(indir,outdir,include_tif=True):
@@ -21,14 +23,14 @@ def copy_projects(indir,outdir,include_tif=True):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i','--input-directory',default='/tmp',help='input directory')
-    parser.add_argument('-o','--output-directory',default='/scratch2/mhagdorn/pictures',help='input directory')
-    parser.add_argument('-b','--backup-directory',default='/home/pictures',help='input directory')
+    parser.add_argument('-c','--config',help='read configuration from file')
     args = parser.parse_args()
+
+    cfg = read_config(args.config)
     
-    indir = Path(args.input_directory)
-    outdir =  Path(args.output_directory)
-    backupdir =  Path(args.backup_directory)
+    indir = Path(cfg['directories']['tempdir'])
+    outdir =  Path(cfg['directories']['project'])
+    backupdir =  Path(cfg['directories']['backedup'])
 
     for d in (indir,outdir,backupdir):
         if not d.is_dir():
