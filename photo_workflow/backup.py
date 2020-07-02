@@ -13,12 +13,13 @@ def copy_projects(indir,outdir,include_tif=True):
             if not include_tif and f.suffix=='.tif':
                 continue
             o = outdir/f.relative_to(indir)
-            if f.is_dir() and not o.exists():
-                logging.debug('create directory {}'.format(o))
-                o.mkdir(parents=True)
+            if f.is_dir():
+                if not o.exists():
+                    logging.debug('create directory {}'.format(o))
+                    o.mkdir(parents=True)
             else:
                 if not o.exists() or f.stat().st_mtime > o.stat().st_mtime:
-                    logging.debug('copying file to {}'.format(o))
+                    logging.debug('copying file {} to {}'.format(f,o))
                     shutil.copy2(f,o)
 
 def main():
