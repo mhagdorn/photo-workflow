@@ -3,6 +3,7 @@
 from setuptools import setup
 
 setup(name='photo-workflow',
+      python_requires='>=3',
       install_requires = ['easywebdav',],
       version='0.1',
       description='marsupium photo workflow helpers',
