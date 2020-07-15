@@ -8,7 +8,7 @@ from .config import read_config
 logging.basicConfig(level=logging.DEBUG)
 
 def copy_projects(indir,outdir,include_tif=True):
-    for p in ('panoramas',):
+    for p in ('panoramas','stack'):
         for f in (indir/p).glob('**/*'):
             if not include_tif and f.suffix=='.tif':
                 continue

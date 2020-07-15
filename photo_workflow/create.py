@@ -16,7 +16,8 @@ def get_image_tags(image):
     return new_tags
 
 def create_folder(indir,outprefix,glob='*.tif'):
-    re_pano = re.compile('p[0-9]{8}.*')
+    re_pano  = re.compile('p[0-9]{8}.*')
+    re_stack = re.compile('s[0-9]{8}.*')
     for p in indir.glob(glob):
         tags = get_image_tags(p)
         if 'panorama' in tags:
@@ -27,6 +28,16 @@ def create_folder(indir,outprefix,glob='*.tif'):
                 logging.warning('could not find correct panorama tag')
                 continue
             outdir = outprefix/'panoramas'/t
+            outdir.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(p),str(outdir))
+        elif 'focus stack' in tags:
+            for t in tags:
+                if re_stack.match(t):
+                    break
+            else:
+                logging.warning('could not find correct panorama tag')
+                continue
+            outdir = outprefix/'stack'/t
             outdir.mkdir(parents=True, exist_ok=True)
             shutil.move(str(p),str(outdir))
         else:
