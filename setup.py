@@ -16,6 +16,7 @@ setup(name='photo-workflow',
               'photo-create-project = photo_workflow.create:main',
               'photo-backup-project = photo_workflow.backup:main',
               'photo-download-gpx = photo_workflow.getgpx:main',
+              'photo-archive = photo_workflow.archive:mai',
               ],
       },
 
