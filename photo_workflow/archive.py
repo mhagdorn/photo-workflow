@@ -3,6 +3,9 @@ import argparse, sys
 import logging
 import datetime
 import subprocess
+import threading
+from queue import Queue
+import tempfile
 
 from .config import read_config
 
@@ -14,26 +17,54 @@ def generate_tasks(indir,outdir,pattern):
         if f.suffix in raw:
             xf = Path(str(f)+'.xmp')
             of = outdir/f.relative_to(indir).with_suffix('.jpg')
+            if not xf.exists():
+                xf = None
             if of.exists():
-                if xf.exists() and xf.stat().st_mtime > of.stat().st_mtime:
-                    yield f,of
+                if xf is not None and xf.stat().st_mtime > of.stat().st_mtime:
+                    yield f,xf,of
                 elif f.stat().st_mtime > of.stat().st_mtime:
-                    yield f,of
+                    yield f,xf,of
             else:
-                yield f,of
+                yield f,xf,of
+
+class Worker(threading.Thread):
+    def __init__(self,tasks,lock):
+        super().__init__(daemon=True)
+        self.tasks = tasks
+        self.lock = lock
+        self.cfgdir = tempfile.TemporaryDirectory()
+        
+    def run(self):
+        while True:
+            infile,xmpfile,outfile = self.tasks.get()
+
+            if not outfile.parent.exists():
+                with self.lock:
+                    if not outfile.parent.exists():
+                        logging.info('create directory {}'.format(outfile.parent))
+                        outfile.parent.mkdir(parents=True,exist_ok=True)
+
+            cmd = ['/usr/bin/darktable-cli','--width','2048','--height','1024',str(infile)]
+            if xmpfile is not None:
+                cmd.append(str(xmpfile))
+            cmd.append(str(outfile))
+            cmd += ['--core','--configdir',self.cfgdir.name]
+
+            logging.info('running {}'.format(' '.join(cmd)))
+            try:
+                output=subprocess.check_output(cmd)
+            except Exception as e:
+                logging.error(e)
+            self.tasks.task_done()
+
                 
-def create_jpg(infile,outfile):
+def create_jpg(infile,outfile,lock):
     if not outfile.parent.exists():
-        logging.info('create directory {}'.format(outfile.parent))
-        outfile.parent.mkdir(parents=True,exist_ok=True)
+        print ('create {}'.format(outfile.parent))
 
-    cmd = ['/usr/bin/darktable-cli','--width','2048','--height','2048',str(infile),str(outfile)]
-    logging.debug('running {}'.format(' '.join(cmd)))
-    try:
-        output=subprocess.check_output(cmd)
-    except Exception as e:
-        logging.error(e)
-
+    cmd = ['darktable-cli','--width',2048,'--height',1024,infile,outfile]
+    print (cmd)
+        
 def main():
     TODAY=datetime.datetime.now()
     
@@ -73,12 +104,21 @@ def main():
 
     inpattern = Path(str(year),inpattern)
 
+    lock = threading.Lock()
+    tasks = Queue()
+
+    # start workers
+    workers = []
+    for i in range(args.num_process):
+        w = Worker(tasks,lock)
+        w.start()
+        workers.append(w)
 
     # generate tasks
-    for infile,outfile in generate_tasks(indir,outdir,inpattern):
-        create_jpg(infile,outfile)
+    for t in generate_tasks(indir,outdir,inpattern):
+        tasks.put(t)
 
-
+    tasks.join()
     
     
 if __name__ == '__main__':
