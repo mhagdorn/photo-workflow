@@ -33,6 +33,43 @@ class KRPano:
                 raise RuntimeError(f'no such file {fname} or {pname}')
         return pname
 
+    def add_data(self,outdir):
+        circle = Path('hs_circle.png')
+        oc = outdir/circle
+        ic = Path('data')/circle
+        if not oc.exists():
+            logging.debug(f'copying hotspot image {ic} to {oc}')
+            shutil.copy(ic,oc)
+
+    def hotspots(self,pano,outdir):
+        self.add_data(outdir)
+        if 'hotspots' in pano:
+            with open(outdir/Path(pano['pname']+'_hotspots.xml'),'w') as hotspots:
+                hotspots.write("""<krpano>
+  <include url="%VIEWER%/plugins/showtext.xml" />
+  <style name="letter"
+               capture="false" handcursor="false"
+               fillcolor="0xffff00" fillalpha="0.30"
+               bordercolor="0xffff00" borderalpha="0.80"
+               onover="tween(alpha, 0.1, 0.25);"
+               onout="tween(alpha, 1.0, 0.25);"
+               ondown.touch="onover(); asyncloop(pressed, onhover(); );"
+               onup.touch="onout();"
+               />
+  <textstyle name="STYLE7"
+             font="Arial" fontsize="14" padding="4"
+             edge="left" textalign="left" xoffset="15" yoffset="0"
+             />
+""")
+                nspot = 1
+                for h in pano["hotspots"]:
+                    hotspots.write(f'''  <hotspot name="spot{nspot}" style="letter" type="image" url="hs_circle.png"
+           scale="0.3" ath="{h['ath']}" atv="{h['atv']}"
+           onhover="showtext({h['description']}, STYLE7);"/>
+''')
+                    nspot +=1
+                hotspots.write('</krpano>')
+
     def run(self,pano,outdir, debug=False, html=False):
         inpano = self.pname(pano['input'])
         logging.debug(f'input panorama: {inpano}')
@@ -118,6 +155,10 @@ class KRPano:
             for o in ['hlookat','vlookat','fov']:
                 if o in pano and pano[o] != '':
                     view.attrib[o] = str(pano[o])
+        if 'hotspots' in pano:
+            self.hotspots(pano,outdir)
+            include = xml.etree.ElementTree.SubElement(et.getroot(), 'include')
+            include.attrib['url'] = pano['pname']+'_hotspots.xml'
         if debug:
             events = xml.etree.ElementTree.SubElement(et.getroot(), 'events')
             events.attrib['onviewchange'] = "showlog(true);trace('hlookat ',view.hlookat);trace('vlookat ',view.vlookat);trace('fov ',view.fov);"
@@ -136,6 +177,8 @@ def main():
                         help="add debug functionality to panorama")
     parser.add_argument('-H','--html',action="store_true",default=False,
                         help="generate html file")
+    parser.add_argument('-s','--hotspots',action="store_true",default=False,
+                        help="generate hotspots file only"),
     parser.add_argument("-o","--output-dir",metavar="DIR",
                         default="panoramas",type=Path,
                         help="name of output base directory")
@@ -153,10 +196,10 @@ def main():
     krpano = KRPano(cfg['krpano']['tools'],cfg['directories']['panoramas'],
                     cfg['krpano']['template'])
 
-    try:
+    if args.hotspots:
+        krpano.hotspots(pano,args.output_dir)
+    else:
         krpano.run(pano,args.output_dir, debug=args.debug, html=args.html)
-    except Exception as e:
-        parser.error(e)
             
 if __name__ == '__main__':
     main()
