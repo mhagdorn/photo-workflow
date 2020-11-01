@@ -91,7 +91,7 @@ class KRPano:
             krpano_args.append("-html=false")
             
         for o in ['vfov','voffset']:
-            if o in pano and len(pano[o]) >0:
+            if o in pano and pano[o] != '':
                 krpano_args.append(f"-{o}={pano[o]}") 
 
         # run krpano
@@ -116,8 +116,8 @@ class KRPano:
         view=root.find('view')
         if view is not None:
             for o in ['hlookat','vlookat','fov']:
-                if o in pano and len(pano[o]) >0:
-                    view.attrib[o] = pano[o]
+                if o in pano and pano[o] != '':
+                    view.attrib[o] = str(pano[o])
         if debug:
             events = xml.etree.ElementTree.SubElement(et.getroot(), 'events')
             events.attrib['onviewchange'] = "showlog(true);trace('hlookat ',view.hlookat);trace('vlookat ',view.vlookat);trace('fov ',view.fov);"
