@@ -7,6 +7,7 @@ import shutil
 from pathlib import Path
 import subprocess
 import xml.etree.ElementTree
+import pkg_resources
 
 from .config import read_config
 
@@ -34,14 +35,17 @@ class KRPano:
         return pname
 
     def add_data(self,outdir):
-        circle = Path('hs_circle.png')
-        oc = outdir/circle
-        ic = Path('data')/circle
+        oc = outdir/'hs_circle.png'
+        ic = Path(pkg_resources.resource_filename('photo_workflow',
+                                                  'data/hs_circle.png'))
         if not oc.exists():
             logging.debug(f'copying hotspot image {ic} to {oc}')
             shutil.copy(ic,oc)
 
     def hotspots(self,pano,outdir):
+        if not outdir.exists():
+            outdir.mkdir(parents=True)
+
         self.add_data(outdir)
         if 'hotspots' in pano:
             with open(outdir/Path(pano['pname']+'_hotspots.xml'),'w') as hotspots:
