@@ -17,7 +17,7 @@ setup(name='photo-workflow',
               'photo-backup-project = photo_workflow.backup:main',
               'photo-download-gpx = photo_workflow.getgpx:main',
               'photo-archive = photo_workflow.archive:main',
-              'photo-krpano = photo_workflow.krpano.main',
+              'photo-krpano = photo_workflow.krpano:main',
               ],
       },
 
