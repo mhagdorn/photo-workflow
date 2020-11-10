@@ -61,7 +61,7 @@ class KRPano:
                onup.touch="onout();"
                />
   <textstyle name="STYLE7"
-             font="Arial" fontsize="14" padding="4"
+             font="Arial" fontsize="14" padding="4" bold="false
              edge="left" textalign="left" xoffset="15" yoffset="0"
              />
 """)
