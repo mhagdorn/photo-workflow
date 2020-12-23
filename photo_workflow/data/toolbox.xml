@@ -1,0 +1,292 @@
+﻿<krpano>
+	<include url="distortedhotspot_editor.xml" />
+	<include url="polygonalhotspot_editor.xml" />
+	<include url="numbers.xml" />
+	<include url="scrollingtext.xml" />
+	<include url="grid.xml" />
+	<include url="stickies.xml" />
+	
+	<toolbox
+			 align="lefttop"
+			 x="10"
+			 y="100"
+			 css="font-family:Helvetica;font-size:12px;color:0xffffff;text-align:center;"
+			 css2="font-family:Helvetica;font-size:10px;color:0xffffff;text-align:center;"
+			 css3="font-family:Helvetica;font-size:14px;color:0xffffff;text-align:left;"	
+			 css4="font-family:Helvetica;font-size:8px;color:0x000000;text-align:center;"
+			 
+	/>		 
+
+<!-- temp fix  for use keystroke D / debugmode -->
+<events name="no_d_key" keep="true" onkeydown="if(keycode == 68, showlog(true);set(debugmode,true);wait(0);showlog(false); );" />
+
+	<!-- press T to	show the toolbox -->
+	<events name="tb_keys" keep="true" onkeydown="ToolboxKeys();" />
+	<action name="ToolboxKeys" scope="private:toolbox">
+		<!--   trace(get(global.keycode)); -->
+		if(global.keycode == 84, ShowToolbox(global.layer[tb_container].alpha)); <!-- T Toolbox -->
+        if(global.keycode == 77, ToolBoxHome());      <!-- M Menu/Home -->
+		if(global.keycode == 76, ToolboxPrint());     <!-- L Log -->
+		if(global.keycode == 73, ToolboxHelp());      <!-- I Info -->
+		if(global.keycode == 83, ShowStickies());     <!-- S Stickies -->
+        if(global.keycode == 71, ShowGrid());         <!-- G  Grid -->
+        
+        if(global.keycode == 68, ShowTool(dhe));      <!-- D distortedhotspot editor -->
+        if(global.keycode == 80, ShowTool(phe));      <!-- P polygonalhotspot editor -->
+        if(global.keycode == 78, ShowTool(num));      <!-- N numbers editor -->
+        
+        
+	</action>	
+    
+    <action name="ShowTool" scope="private:toolbox">
+        if(global.layer[tb_container].alpha GT 0,
+            ToolBoxHome();
+            ToolSelect(%1);
+        ,
+            ToolBoxHome();
+            tween(global.layer[tb_container].alpha, 1,0.5,, ToolSelect(%1));
+        );
+    </action>
+    
+	<!-- styles -->
+	<style name="tb_chap" type="text" align="top" width="-20" height="30" bgcolor="0x666666" bgalpha="1" bgroundedge="0" vcenter="true" css="get:toolbox.css2" onover="set(bgcolor,0x336699);" onout="set(bgcolor,0x666666);" /> 
+    <style name="keyc" type="text" keep="true" enabled="false" align="lefttop" x="2" y="2" bg="false" bgalpha="1" html="" css="get:toolbox.css4" zorder="100" />
+
+
+
+	<layer name="tb_container" keep="true" type="container" autoalpha="true" alpha="0" align="get:toolbox.align" x="get:toolbox.x" y="get:toolbox.y" bgcolor="0x333333" bgalpha="1" width="200" height="265" bgroundedge="0" bgcapture="true" ondown="tb_draglayer();"	>
+    
+		<layer name="tb_tit" type="text" enabled="false" align="top" y="10" bg="false" vcenter="true" html="KRPANO TOOLBOX" css="get:toolbox.css" onclick="ToolBoxHome"  >
+            <layer name="tb_keystit" type="text" align="lefttop" width="20" height="20" x="-10" y="-10" bg="false" alpha="0.4" html="M" vcenter="true" css="font-family:Helvetica;color:#ffffff;font-size:7px;" onclick="ToolBoxHome"  />
+        </layer>
+		<layer name="tb_logovt" type="text" align="righttop" width="20" height="20" x="10" y="8" bgcolor="0x336699" bgalpha="1" bgroundedge="10" html="TUUR" vcenter="true" css="font-family:Helvetica;color:#ffffff;font-size:6px;text-align:center;" onclick="openurl(http://www.virtualtuur.com,_blank);" onloaded="trace('Simple Free Krpano ToolBox and Stickies © by Virtual Tuur ')" />
+		<layer name="tb_dhe" style="tb_chap" y="50" html="DISTORTED HOTSPOT EDITOR" onclick="ToolSelect(dhe);" onloaded="MakeKeycode(dhe,D,get(name));" />
+		<layer name="tb_phe" style="tb_chap" y="90" html="POLYGONAL HOTSPOT EDITOR" onclick="ToolSelect(phe);" onloaded="MakeKeycode(phe,P,get(name));" />
+		<layer name="tb_numbers" style="tb_chap" y="130" html="NUMBERS" onclick="ToolSelect(num);" onloaded="MakeKeycode(num,N,get(name));"/>
+		<layer name="tb_grid" style="tb_chap" y="170" html="GRID" onclick="ToolSelect(grid);" onloaded="MakeKeycode(grid,G,get(name));"/>
+		<layer name="tb_stickies" style="tb_chap" y="210" html="STICKIES" onclick="ToolSelect(stickies);" onloaded="MakeKeycode(stickies,S,get(name));"/>
+		
+		<layer name="tb_dragstrip1" type="text" align="bottom" y="6" bg="false" vcenter="true" html="you can drag me" css="get:toolbox.css2" alpha="0.4" enabled="false" />
+
+		<layer name="tb_help" type="text" align="rightbottom" x="10" y="6" bg="false" vcenter="true" html="?" css="get:toolbox.css2" alpha="0.4" onclick="ToolboxHelp" />
+	</layer>	
+
+	<action name="ShowToolbox" scope="private:toolbox">
+		if(%1 == 0, tween(%1,1);, tween(%1,0));
+	</action>
+    
+    <action name="MakeKeycode" scope="private:toolbox">
+        set(tkc, %1_tkc);
+        addlayer(get(tkc)); 
+        global.layer[get(tkc)].loadstyle(keyc);
+        set(global.layer[get(tkc)], html=%2,parent=layer[%3]);
+    </action>
+
+	
+	<action name="ToolSelect" scope="private:toolbox">
+		for(set(i,0), i LT global.layer.count, inc(i),
+            ifnot(%1 == 'grid' OR %1 == 'stickies',
+			     if(global.layer[get(i)].style == tb_chap, set(global.layer[get(i)].visible, false));
+            );
+		);
+		set(_tb, %1);
+		if(%1 == 'dhe', callwith(global.layer[tb_container], tween(width|height, 405|341,,,set(global.layer[dhe_toolbox].visible, true))));
+		if(%1 == 'phe', callwith(global.layer[tb_container], tween(width|height, 200|225,,,set(global.layer[phe_box].visible, true))));
+		if(%1 == 'num', callwith(global.layer[tb_container], tween(width|height, 200|285,,,set(global.layer[num_container].visible, true))));
+		if(%1 == 'grid', ShowGrid());
+		if(%1 == 'stickies', ShowStickies());        
+        
+      
+		set(global.layer[tb_tit].enabled,true);
+	</action>
+	
+	
+	<action name="ToolBoxHome" scope="private:toolbox">
+		if(_tb == 'dhe', DheResetAllExit();set(global.layer[dhe_toolbox].visible, false));
+		if(_tb == 'phe', PheExit();set(global.layer[phe_box].visible, false));
+		if(_tb == 'num', set(global.layer[num_container].visible, false));
+		
+		callwith(global.layer[tb_container], tween(width|height, 200|265,,,
+			for(set(i,0), i LT global.layer.count, inc(i),
+				if(global.layer[get(i)].style == tb_chap, set(global.layer[get(i)].visible, true));
+			);
+			set(global.layer[tb_tit].enabled,false);
+			set(_tb, null);
+		));
+		
+	</action>
+
+	<action name="tb_draglayer">
+		copy(drag_currentx, x);
+		copy(drag_currenty, y);
+		copy(drag_stagex, mouse.stagex);
+		copy(drag_stagey, mouse.stagey);
+		indexoftxt(align_contains_right, get(align), 'right');
+		indexoftxt(align_contains_bottom, get(align), 'bottom');
+		calc(drag_align_x, align_contains_right GE 0 ? -1 : +1);
+		calc(drag_align_y, align_contains_bottom GE 0 ? -1 : +1);
+		asyncloop(pressed,
+			calc(x, drag_currentx + (mouse.stagex - drag_stagex)*drag_align_x);
+			calc(y, drag_currenty + (mouse.stagey - drag_stagey)*drag_align_y);
+		  );
+	</action>
+	
+	<action name="ToolboxPrint" scope="private:toolbox">
+
+		if(_tb == 'num', NumPrint());
+		if(_tb == 'phe', PhePrint());
+		if(_tb == 'dhe', DhePrintCode());
+		showlog();
+	</action>	
+	
+	<!-- HELP SECTION -->
+	<layer name="tb_help_container" type="text" keep="true" align="center" width="80%" bgcolor="0x333333" autoheight="true" autoalpha="true" alpha="0"  padding="20" html="data:html_tb_help" css="get:toolbox.css3" />
+	
+	<action name="ToolboxHelp" scope="private:toolbox">
+		ifnot(global.tb_helpscroll,
+			set(global.tb_helpscroll, true);
+			ScrollingTextfieldLayer();
+		,
+			removelayer(stf_bg, true);
+			set(global.tb_helpscroll, false);
+		);
+	</action>	
+	
+	<data name="html_tb_help" >
+		<font size="+1px">Welcome to this Free Simple Krpano ToolBox.</font>
+		[br][br]
+		Put the toolbox FOLDER on the same level as the 'tour.xml' in your project. Include the toolbox.xml in your tour.xml like:
+		[br]
+		&#60;include url="toolbox/toolbox.xml" /&#62;
+		[br][br]
+		Now load your project. 
+        [br]
+        Keystrokes:[br]
+        T  to show/hide the ToolBox. [br]
+        M  to go back to the ToolBox Menu. [br]
+        D  to show/hide the Distorted hotspot editor. [br]
+        P  to show/hide the Polygonal hotspot editor. [br]
+        N  to show/hide the Numbers section. [br]
+        S  to show/hide the Stickies.[br]
+        G  to show/hide the Grid.[br]
+        L  to log the Code. [br]   
+        I  to show/hide the Info. [br]   
+        
+		[br][br]
+		The toolBox is dragable!! 
+		[br]
+		To show/hide this help, you can also click on the small question sign at the right bottom in the ToolBox.
+		[br][br]
+		Currently these 5 tools are available:
+		[br]
+		[li] Distorted Hotspot Editor [/li]
+		[li] Polygonal Hotspot Editor [/li]
+		[li] Numbers [/li]
+        [li] Grid [/li]
+        [li] Stickies [/li]
+		
+		[br][br][br]
+		<font size="+1px">The Distorted Hotspot Editor</font>
+		[br][br]
+		
+		With this tool you will be able to distort your distorted hotspots. Of course it also works with non-distorted hotspots. In that case just use the ATH and ATV.
+		[br]
+		Find the scene or pano where the hotspot you'll like to edit is. Then click on the 'DISTORTED HOTSPOT EDITOR' button in the ToolBox or press D. Click 'START DISTORTED HOTSPOT EDITOR' and start dragging the desired hospot. With the 'tune' or 'fine tune' buttons you can do all your x-y-z-scale distortions. All buttons have a seperate reset. The 'Reset All' button will sett all values to 0, and scale to original scale as defined in your hotspot code.
+		[br]
+		When done and satisfied, editting this hotspot, click 'Print', or press L. In the log you will find all relevant code. Copy/paste it in the source code of your project.
+		[br]
+		If you like to go on ... press the top button, 'STOP DISTORTED HOTSPOT EDITOR' or click the 'Krpano ToolBox' top title to go back to the ToolBox index and stop the 'Distorted Hotspot Editor' and find your way in your project to a next hotspot to distort or to use another tool. Of course you can press T to hide the ToolBox at any time, but i would advise to stop this editor first!
+		
+		[br][br][br]
+		<font size="+1px">The Polygonal Hotspot Editor</font>
+		[br][br]
+		Click the 'START NEW HOTSPOT' button and start drawing your Polygonal hotspot by clicking. When done press space. You can press L or click the 'SHOW CODE' button to get the relevant code, OR, just press 'START NEW HOTSPOT' again and make a new one. In this case, when fully finished, press L and it will show all your polygonal drawings.
+		
+		[br][br][br]
+		<font size="+1px">Numbers</font>
+		[br][br]
+		This will show you some relevant numbers. In case of needing the mouse position or so... press L to show all current numbers.
+
+		[br][br][br]
+		<font size="+1px">Grid</font>
+		[br][br]
+		This will show you a basic cubeface grid. Press G to show/hide.
+
+		[br][br][br]
+		<font size="+1px">Stickies</font>
+		[br][br]
+		This powerfull tool can keep all your code syntax references and/or code blocks or often used lines etc etc under your finger and close by. Just press S and click the stickie that containes the code block, for example, to add an html div.. etc etc.. copy to paste it in your code..or find quickly the right ASCII code for often used characters. You can add stickies by altering the code in the stickie_data.xml file. 
+        [br]stickie_tits for the 'title'. 
+        [br]stickie_pos for the position.
+        [br]In the html folder you can add a new html file containing a new stickie code (to copy). Use the dummy.html as template.
+        [br]The amount of stickies and other settings you can also control in stickie_data.xml
+
+		[br][br][br]
+		NOTE:
+		[br]
+		In the ToolBox there is a scrolling textfield for this help page. The scrollarea.js is in this 'toolbox' folder as well. (version 1.19pr16). You can change it there when problems occure or point it to 'your own' scrollarea.js. Find it in the scrollingtext.xml at line 70. 
+		[br]
+		The code is made with some of the latest code options (krpano version 1.19pr16). It might be that it is not backwards compatible with older versions.
+		[br][br]
+		This is a Share-Ware product  <a href="http://www.virtualtuur.com" target="_blank" style="color:#55BDE0;" > © by Virtual Tuur</a>. 
+		[br]
+		Please use it and i hope it brings some convenience. If you find a problem or a bug, if you like it or have idea's.. please let me know. <a href="mailto:virtualtuur@gmail.com" target="_self" style="color:#55BDE0;" >EMAIL</a> 
+		[br]
+		PayPal donations are welcome!
+		[br][br]
+		Enjoy!
+		[br][br]
+		<font size="+2px">;-&#41;</font>
+		
+	</data>
+    
+
+    <style name="html_div"
+        type="container" 
+        zorder="100" 
+        align="center" width=""  height="80%" 
+        bgborder="1 0xFFFFFF 0.5" bgcolor="0x333333" bgalpha="1"
+        bgcapture="true" capture="true" handcursor="false"
+        onloaded="add_stickie_html_code(get(global.data[html_example_code].content), 10);"
+    /> 
+
+	<action name="add_stickie_html_code" type="Javascript" ><![CDATA[
+		var div = document.createElement("div");
+		
+		// basic styles to fit into the layer size and allow scrolling:
+		div.style.width = "100%";
+		div.style.height = "100%";
+        
+		div.style.overflow = "auto";
+		div.style.boxSizing = "border-box";
+		div.style.border = "0px";        
+		div.style.overflow = "hidden";        
+      
+        
+		div.style.padding = args[2] ? (args[2] + "px") : "0";
+		
+		// allow text selection (optional):
+		div.style.webkitUserSelect =
+		div.style.MozUserSelect =
+		div.style.msUserSelect =
+		div.style.userSelect = "text";
+		
+		// hacks for browsed-based mouse-wheel and touch-scrolling support:
+		div.addEventListener("mousewheel", function(event){ event.stopPropagation(); }, true);
+		div.addEventListener("DOMMouseScroll", function(event){ event.stopPropagation(); }, true);
+		div.addEventListener("touchstart", function(event){ if(krpano.device.ios && window.innerHeight == krpano.display.htmltarget.offsetHeight){ /* avoid the iOS 'overscrolling' for fullpage viewers */ var bs = document.body.parentNode.style; bs.position="fixed"; bs.top=0; bs.left=0; bs.right=0; bs.bottom=0; } krpano.control.preventTouchEvents = false; event.stopPropagation(); }, true);
+		div.addEventListener("touchend", function(event){ krpano.control.preventTouchEvents = true; event.stopPropagation(); }, true);
+		div.addEventListener("gesturestart", function(event){ event.preventDefault(); }, true);
+		
+		// add some html code:
+		div.innerHTML = args[1];
+	
+		// add the div to the layer element:
+		caller.sprite.appendChild(div);
+	
+	]]></action>
+    
+	<data name="html_example_code"><![CDATA[
+	]]></data>
+    
+</krpano>

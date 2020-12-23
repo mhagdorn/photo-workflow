@@ -1,0 +1,83 @@
+<krpano>
+
+	<style name="tb_num" type="text" align="lefttop" x="10" width="180"  backgroundcolor="0xffffff" backgroundalpha="0.8" css="data:css_num" html="" enabled="false" border="true" borderwidth="2" bordercolor="0x333333" roundedge="0" padding="10" />
+
+	
+	<data name="css_num">
+		font-family: Helvetica; font-size:12px; color:#333333; text-align:left; line-height:14px;
+	</data>
+	<data name="css_num2">
+		font-family: Helvetica; font-size:10px; color:#333333; text-align:center; line-height:14px;		
+	</data>
+
+	
+	<layer name="num_container" type="container" keep="true" parent="layer[tb_container]" visible="false" bgcolor="0x333333" bgalpha="1" align="lefttop" width="200" height="220" x="0" y="30" > 	
+		<layer name="num1" style="tb_num"  y="20"  height="60"  />
+		<layer name="num2" style="tb_num"  y="90"  height="140" />
+		<layer name="numprint" type="text" bg="false" align="bottom" html="PRESS L TO SHOW CODE" css="data:css_num2" />	
+	</layer>
+	
+
+	<events name="tb_numbers" keep="true" onviewchange="adjusthlookat(0);NumDoView(get(view.hlookat), get(view.vlookat),get(view.fov));NumDoMouse();" onresize="NumDoStage"  />
+
+	
+	<action name="NumDoView" type="Javascript"  ><![CDATA[
+		var hl = args[1];
+		var vl = args[2];
+		var fo = args[3];
+
+		var h = hl.toFixed(8);
+		var v = vl.toFixed(8);
+		var f = fo.toFixed(8);
+
+		krpano.call("set(layer[num1].html, Hlookat: " + h + '[br]Vlookat: ' + v + '[br]Fov: ' + f);
+	]]></action>
+
+	
+	<action name="NumDoMouse" scope="private:numbers" >
+		setinterval(time, 0.02,
+			screentosphere(global.mouse.x, global.mouse.y, toh, tov);
+			roundval(toh,7);
+			roundval(tov,7);
+			set(global.layer[num2].html, calc:'Mouse x = ' + global.mouse.x + '[br]Mouse y = ' + global.mouse.y + '[br]Mouse ATH = ' + toh + '[br]Mouse ATV = ' + tov + '[br]Stagewidth = ' + global.stagewidth + '[br]Stageheight = ' + global.stageheight);
+		);
+	</action>
+
+	<action name="NumDoStage" scope="private:numbers">
+			set(global.layer[num2].html, calc:'Mouse x = ' + global.mouse.x + '[br]Mouse y = ' + global.mouse.y + '[br]Mouse ATH = ' + toh + '[br]Mouse ATV = ' + tov + '[br]Stagewidth = ' + global.stagewidth + '[br]Stageheight = ' + global.stageheight);
+	</action>	
+	
+    	<action name="NumPrint" scope="private:numbers">
+				set(_numprint, calc:'&#xA;&#xA;' + 'hlookat="' + global.view.hlookat + '" vlookat="' + global.view.vlookat + '" fov="' + global.view.fov + '"' + '&#xA;' + 'Mouse Stage X= ' + global.mouse.x + ' -- Mouse Stage Y= ' + global.mouse.y + ' -- Mouse ATH = ' + toh + ' -- Mouse ATV = ' + tov + '&#xA;' + 'Stage-width = ' + global.stagewidth + ' px &#xA;' + 'Stage-height = ' + global.stageheight + ' px');
+			trace(_numprint);		
+			showlog();
+	</action>
+
+    
+    <data name="numbers_close"><![CDATA[
+        <span style="text-decoration:underline;cursor:pointer;font-size:10px;font-family:courier;" onclick="document.getElementById('krpanoSWFObject').call('tween(global.layer[bg_sub].alpha,0);');" style="color:#FFFFFF;">click to close</span>
+        <br><br>
+    ]]>
+    </data>
+    <data name="html_break"><![CDATA[<br>]]></data>
+    <data name="NumbersResult" args1="" ><![CDATA[
+        
+        
+    
+    ]]></data>
+    
+    
+    <action name="MakeNumbersContent" scope="private:numbers">
+        set(global.layer[bg_sub].alpha,1);
+        set(data[NumbersResult].content, calc('%1'));
+        copy(numrestit, calc('global.data[numbers_close].content'));
+        copy(numresbody,calc('global.data[NumbersResult].content'));
+        calc(global.data[html_example_code].content, numrestit + numresbody);
+
+        addlayer(stickiecontent);
+        global.layer[stickiecontent].loadstyle(html_div);
+        set(global.layer[stickiecontent].width, 60%);  
+    </action>
+    
+</krpano>
+

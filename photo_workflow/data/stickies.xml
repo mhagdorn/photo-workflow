@@ -1,0 +1,51 @@
+﻿<krpano>
+    <include url="stickie_data.xml" />
+    <include url="stickie_engine.xml" />
+
+
+    <action name="load_stickie_web_fonts" autorun="preinit" scope="private:stickies" type="Javascript" devices="html5"><![CDATA[
+    if (window.FontFace)
+    {
+        var fonts_to_load = [];
+
+        fonts_to_load.push( (new FontFace("Josefin",  "url('toolbox/fonts/JosefinSans-Regular.ttf')")).load() );
+
+        Promise.all( fonts_to_load ).then( function(loaded_fonts)
+        {
+            loaded_fonts.forEach( function(font){ document.fonts.add(font); } );
+
+            update_textfields();
+        });
+    }
+
+        function update_textfields()
+        {
+            var layers = krpano.get("layer").getArray();
+            var hotspots = krpano.get("hotspot").getArray();
+
+            var i;
+
+            for (i=0; i < layers.length; i++)
+            {
+                if (layers[i]._istextfield)
+                {
+                    // force an update by changing the vcenter setting two times
+                    layers[i].vcenter = !layers[i].vcenter;
+                    layers[i].vcenter = !layers[i].vcenter;
+                }
+            }
+
+            for (i=0; i < hotspots.length; i++)
+            {
+                if (hotspots[i]._istextfield)
+                {
+                    // force an update by changing the vcenter setting two times
+                    hotspots[i].vcenter = !hotspots[i].vcenter;
+                    hotspots[i].vcenter = !hotspots[i].vcenter;
+                }
+            }
+        }
+
+    ]]></action>
+
+</krpano>

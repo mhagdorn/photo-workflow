@@ -1,0 +1,189 @@
+﻿<krpano>
+
+
+<!-- CSS -->
+<data name="css_stf_tit"> <!-- title -->
+	font-family: Helvetica; font-size:16px; font-weight:bold;  color:#ffffff; text-align:left; line-height:16px;
+</data>
+
+<data name="css_stf"> <!-- text -->
+	font-family: Helvetica; font-size:13px;  color:#ffffff; text-align:left; line-height:18px;
+</data>
+
+
+<!-- SETTINGS -->
+<stf_settings
+	title="true"
+	scrollbuttons="true"
+	
+	align="center"
+	x="0"
+	y="-20"
+	bg_color="0x333333"
+	bg_alpha="1"
+	width="50%"
+	height="50%"
+	border="0"
+	roundedge="4"
+	shadow="10 10 20 0x000000 0"
+	
+	tit_align="lefttop"
+	tit_margin="54"
+	tit_x="8"
+	tit_css="data:css_stf_tit"
+	
+	txt_x="10"
+	txt_y="10"
+	txt_margin="10"
+	txt_bgcolor="0x333333"	
+	txt_bgalpha="0"
+	txt_shadow="1 1 2 0x000000 0"
+	
+	css="data:css_stf"
+	
+	scrollbar_bgcolor="0x666666"
+	scrollbar_bgalpha="0.25"
+	scrollbar_width="2"
+	
+	scrollslider_bgcolor="0x666666"
+	scrollslider_bgalpha="1"
+	scrollslider_width="8"		  
+	scrollslider_height="8"		  
+	scrollslider_roundedge="4"	
+	
+	scrollbuttonscolor="#666666"
+	scrollbuttonsalpha="0"
+	
+	closecolor="0x666666"
+	
+	ashotspot_x_offset="80"
+	ashotspot_y_offset="-70"
+/>
+ 
+
+
+
+<!-- SCROLLING TEXTFIELD LAYER STYLES -->
+<style name="stfbg" type="text" align="get:stf_settings.align" x="get:stf_settings.x" y="get:stf_settings.y" bgcolor="get:stf_settings.bg_color" bgalpha="get:stf_settings.bg_alpha" width="get:stf_settings.width" height="get:stf_settings.height" alpha="1" autoalpha="true" handcursor="false" bgborder="get:stf_settings.border" bgroundedge="get:stf_settings.roundedge" bgshadow="get:stf_settings.shadow" mergedalpha="true"/>
+<style name="stftit" type="text" enabled="false" handcursor="false" align="get:stf_settings.tit_align" x="get:stf_settings.tit_x" y="6" width="calc:layer[stf_bg].width - 24 - stf_settings.tit_x" height="18" background="false" border="false" css="get:stf_settings.tit_css" vcenter="true" txtshadow="get:stf_settings.txt_shadow"  />
+<style name="stftxtmask" type="container" bgcolor="get:stf_settings.txt_bgcolor" bgalpha="get:stf_settings.txt_bgalpha" align="lefttop" x="get:stf_settings.txt_x" y="get:stf_settings.txt_y" width="calc:(stf_settings.txt_x + 20)*-1" height="" maskchildren="true" />
+<style name="stftxtscroller" url="scrollarea.js" align="lefttop" width="100%" height="100%" mwheel="true" direction="v" overscroll="0" onscroll="if(hoverflow GT 0, div(yp,toverflow,hoverflow);Math.min(yp,1);Math.max(yp,0); copy(th,layer[stf_scrollbar].pixelheight);sub(th,1);sub(th,1);sub(th,layer[stf_scrollslider].pixelheight); mul(yp,th);add(yp,1); copy(layer[stf_scrollslider].y,yp); );" /> 	
+<style name="stftxt" type="text" align="lefttop" x="0" y="0" width="100%" autoheight="true" background="false" border="false" onautosized="copy(layer[stf_txtscroller].height, height);" padding="20" css="get:stf_settings.css" oversampling="1.0"
+         mipmapping="false" wordwrap="true" txtshadow="get:stf_settings.txt_shadow" />
+<style name="stfscrollbar" type="container" bgcolor="get:stf_settings.scrollbar_bgcolor" bgalpha="get:stf_settings.scrollbar_bgalpha" align="righttop" x="9" y="" width="get:stf_settings.scrollbar_width" height="" zorder="100" />
+<style name="stf_scrollslider" type="container" bgcolor="get:stf_settings.scrollslider_bgcolor" bgalpha="get:stf_settings.scrollslider_bgalpha" bgcapture="true" width="get:stf_settings.scrollslider_width" height="get:stf_settings.scrollslider_height" bgroundedge="get:stf_settings.scrollslider_roundedge" align="top" x="0"  y="0"  ondown="if(layer[stf_txtscroller].hoverflow GT 0, copy(cy,y);copy(sy,mouse.stagey);dragging(); );" 
+dragging="if(pressed, sub(dy,mouse.stagey,sy);add(ny,cy,dy);Math.max(ny,1); copy(th,layer[stf_scrollbar].pixelheight);sub(th,1);sub(th,layer[stf_scrollslider].pixelheight);Math.min(ny,th); copy(y,ny); sub(ny,1);sub(th,layer[stf_scrollslider].pixelheight);div(ny,th); copy(fh,layer[stf_txtscroller].hoverflow); mul(fh,-1); mul(ny,fh); layer[stf_txtscroller].stopscrolling(); copy(layer[stf_txtscroller].y,ny); delayedcall(0,dragging()); );" />
+<style name="scrollup" type="text" alpha="get:stf_settings.scrollbuttonsalpha" width="" height="" html="^" x="" y="" align="" edge="center" css="calc:'font-family: Arial; font-size:14px;  color:' + stf_settings.scrollbuttonscolor + '; text-align:center; line-height:16px;'"  />
+<style name="stfclose" type="container" align="center" bgcolor="get:stf_settings.closecolor" bgalpha="1" bgroundedge="4" width="2" height="12" x="" y="" enabled="false" />
+<style name="stfclosecontainer" type="container" align="righttop" bgcolor="0x336699" bgalpha="0" bgcapture="true" width="20" height="20" x="" y="" onclick="ToolboxHelp" />
+
+
+
+
+<!-- MAKE SCROLLING TEXTFIELD stf AS LAYER -->
+<action name="ScrollingTextfieldLayer">
+
+	ifnot(webvr.isenabled,
+	set(_stftitvar, calc('ToolBox Info[br]<font size="-2px" color="#55BDE0">© by Virtual Tuur</font>'));
+		set(_stfvar, calc('data:html_tb_help'));
+
+		addlayer(stf_bg);
+		copy(sbg, layer[stf_bg]);
+		sbg.loadstyle(stfbg);
+		if(%2 == hotspot[%2].name,
+			set(sbg.parent, hotspot[%2]);
+			calc(sbg.ox, stf_settings.ashotspot_x_offset);
+			calc(sbg.oy, stf_settings.ashotspot_y_offset);
+		);
+
+		addlayer(stf_txt_mask);
+		copy(stm, layer[stf_txt_mask]);
+		set(stm.parent,layer[stf_bg]);
+		stm.loadstyle(stftxtmask);
+		if(stf_settings.title,
+			calc(stm.y, stf_settings.tit_margin);
+			calc(stm.height, ((stf_settings.tit_margin + 10)*-1));
+		,
+			calc(stm.y, stf_settings.txt_margin);
+			calc(stm.height, (stf_settings.txt_margin * 2) *-1 );
+		);
+
+		addlayer(stf_txtscroller);
+		copy(sts, layer[stf_txtscroller]);
+		set(sts.parent,layer[stf_txt_mask]);
+		sts.loadstyle(stftxtscroller);
+
+		addlayer(stf_txt);
+		copy(st, layer[stf_txt]);
+		st.loadstyle(stftxt);
+		set(st.parent,layer[stf_txtscroller]);
+		set(st.html, get(_stfvar));    
+
+		addlayer(stf_scrollbar);
+		copy(ssb, layer[stf_scrollbar]);
+		set(ssb.parent,layer[stf_bg]);
+		ssb.loadstyle(stfscrollbar);
+		if(stf_settings.title,
+			calc(ssb.y, stf_settings.tit_margin);
+			calc(ssb.height, ((stf_settings.tit_margin + 10)*-1));
+		,
+			set(ssb.y,26);
+			set(ssb.height, -36);
+		);
+
+		addlayer(stf_scrollslider);
+		copy(sss, layer[stf_scrollslider]);
+		sss.loadstyle(stf_scrollslider);
+		set(sss.parent,layer[stf_scrollbar]);
+
+		if(stf_settings.scrollbuttons,
+			addlayer(stf_scrollup);
+			copy(ssu,layer[stf_scrollup]);
+			ssu.loadstyle(scrollup);
+			set(ssu.parent,layer[stf_bg]);
+			calc(ssu.align, layer[stf_scrollbar].align);
+			calc(ssu.x, layer[stf_scrollbar].x + 1);
+			calc(ssu.y, layer[stf_scrollbar].y - 2);
+			set(ssu.ondown, asyncloop(pressed, layer[stf_txtscroller].scrollby(0,+1)));
+
+			addlayer(stf_scrolldown);
+			copy(ssd,layer[stf_scrolldown]);
+			ssd.loadstyle(scrollup);
+			set(ssd.parent,layer[stf_bg]);
+			calc(ssd.align, layer[stf_scrollbar].align);
+			set(ssd.rotate, 180);
+			calc(ssd.x, layer[stf_scrollbar].x + 2);
+			calc(ssd.y, stf_settings.height -8);
+			set(ssd.ondown, asyncloop(pressed, layer[stf_txtscroller].scrollby(0,-1)));
+		);
+	
+		addlayer(stf_close_container);
+		copy(scc, layer[stf_close_container]);
+		scc.loadstyle(stfclosecontainer);
+		set(scc.parent,layer[stf_bg]);
+		
+		addlayer(stf_close1);
+		copy(sc1, layer[stf_close1]);
+		sc1.loadstyle(stfclose);
+		set(sc1.parent, layer[stf_close_container]);
+		set(sc1.rotate,45);
+
+		addlayer(stf_close2);
+		copy(sc2, layer[stf_close2]);
+		sc2.loadstyle(stfclose);
+		set(sc2.parent, layer[stf_close_container]);
+		set(sc2.rotate,-45);
+
+		if(stf_settings.title,
+			addlayer(stf_title);
+			copy(stit, layer[stf_title]);
+			stit.loadstyle(stftit);
+			set(stit.parent, layer[stf_bg]);
+			set(stit.html, get(_stftitvar));
+		);
+	,
+		set(layer[stf_bg].alpha, 0);delayedcall(0.2,removelayer(stf_bg,true));
+	);
+</action>
+ 
+</krpano>

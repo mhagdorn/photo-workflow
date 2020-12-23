@@ -1,0 +1,129 @@
+﻿<krpano>
+<!-- 
+    Press G on your keyboard to show / hide the grid 
+    best to keep the line thickness an even number
+-->
+	<gv
+		grid_count="6"
+		
+		cube_alpha="0.15"
+		line_alpha="0.8"
+        line_thickness="2"
+        text_alpha="0.6"
+				
+		front_col="ffffff"
+		left_col="ff0000"
+		right_col="00ff00"
+		back_col="ffff00"
+		up_col="00ffff"
+		down_col="ff00ff"
+		corner_col="000000"
+	/>	
+
+    <style name="cubeface" type="text" gtag="grid" width="1000" height="1000" distorted="true" enabled="false" visible="true" alpha="1.0"  bgalpha="get:gv.cube_alpha" zorder="1"/>
+	<style name="gridh" type="text" gtag="grid" align="bottom" width="100%" height="get:gv.line_thickness" alpha="get:gv.line_alpha" zorder="4" />
+	<style name="gridv" type="text" gtag="grid" align="left" width="get:gv.line_thickness" height="100%" alpha="get:gv.line_alpha" zorder="5" />
+	<style name="gridc" type="text" gtag="grid" align="left" width="1" height="100%" alpha="get:gv.line_alpha" zorder="6" />
+	<style name="gridtit" type="text" gtag="grid" align="center" bg="false" alpha="get:gv.text_alpha"  />	
+	
+    <action name="ShowGrid" scope="private:grid">
+        if(grid, KillGrid();,MakeGrid());
+    </action>
+    
+	<action name="MakeGrid" scope="private:grid">
+		set(grid, true);
+		MakeGridFace(front,0,0,2);
+		MakeGridFace(left,-90,0,3);
+		MakeGridFace(right,90,0,4);
+		MakeGridFace(back,180,0,5);
+		MakeGridFace(up,0,-90,1);
+		MakeGridFace(down,0,90,1);
+
+		MakeGridLines(front);
+		MakeGridLines(left);
+		MakeGridLines(right);
+		MakeGridLines(back);
+		MakeGridLines(up);
+		MakeGridLines(down);
+	</action>
+	
+	<action name="MakeGridFace" scope="private:grid">
+		set(_gfn, calc:'%1face');
+		addhotspot(get(_gfn));
+		copy(_hgf, global.hotspot[get(_gfn)]);
+		_hgf.loadstyle(cubeface);
+		set(_hgf,ath=%2,atv=%3,zorder=%4,bgcolor=calc('0x'+global.gv.%1_col));
+		
+		set(_gft, calc:'%1facetit');
+		addlayer(get(_gft));
+		copy(_gt, global.layer[get(_gft)]);
+		_gt.loadstyle(gridtit);
+        set(_upper, %1);
+        toupper(_upper);
+		set(_gt,parent=calc('hotspot[%1face]'), html=calc(_upper),css=calc('font-family:Helvetica;font-weight:bold;font-size:100px;color:#' + global.gv.%1_col + ';'));
+	</action>
+	
+	<action name="MakeGridLines" scope="private:grid">
+		ifnot(%1 == 'up' || %1 == 'down',
+			calc(_glc, global.gv.grid_count);
+			calc(_glc2, global.gv.grid_count-1);
+			for(set(i,0), i LE _glc, inc(i),
+				calc(_gln, '%1lines_' + i);
+				calc(_gly, i*(1000/global.gv.grid_count)-(global.gv.line_thickness/2));
+				MakeGridHor(%1);
+			);
+			for(set(j,1), j LE _glc2, inc(j),
+				calc(_glnv, '%1lines_v_' + j);
+				calc(_glx, j*(1000/global.gv.grid_count)-(global.gv.line_thickness/2));
+				MakeGridVer(%1);
+			);
+		,
+			for(set(i,1), i LE _glc2, inc(i),
+				calc(_gln, '%1lines_' + i);
+				calc(_glnv, '%1lines_v_' + i);
+				calc(_gly, i*(1000/global.gv.grid_count)-(global.gv.line_thickness/2));
+				calc(_glx, i*(1000/global.gv.grid_count)-(global.gv.line_thickness/2));
+				MakeGridHor(%1);		
+				MakeGridVer(%1);		
+			);		
+		);
+		
+		ifnot(%1 == 'up' || %1 == 'down',
+			set(_glcc, calc:'%1cline');
+			addlayer(get(_glcc));
+			copy(_glccl, global.layer[get(_glcc)]);
+			_glccl.loadstyle(gridc);
+			set(_glccl.parent, calc:'global.hotspot[%1face]');
+			set(_glccl, x=0,y=0,zorder=20);
+			set(_glccl.bgcolor, calc:'0x'+global.gv.corner_col);
+		);
+	</action>	
+	
+	<action name="MakeGridHor" scope="private:grid">
+        addlayer(get(_gln));
+        copy(_glnl, global.layer[get(_gln)]);
+        _glnl.loadstyle(gridh);
+        set(_glnl,parent=calc('hotspot[%1face]'),bgcolor=calc('0x'+global.gv.%1_col), x=0,y=calc(_gly));
+	</action>
+	
+	<action name="MakeGridVer" scope="private:grid">
+        addlayer(get(_glnv));
+        copy(_glnvl, global.layer[get(_glnv)]);
+        _glnvl.loadstyle(gridv);
+        set(_glnvl,parent=calc('hotspot[%1face]'), x=calc(_glx),y=0,bgcolor=calc('0x'+global.gv.%1_col));
+	</action>
+
+	<action name="KillGrid" scope="private:grid">
+		for(sub(i,global.hotspot.count,1), i GE 0, dec(i),
+			if(global.hotspot[get(i)].gtag == 'grid',
+				removehotspot(get(global.hotspot[get(i)].name));
+			);
+		);
+		for(sub(i,global.layer.count,1), i GE 0, dec(i),
+			if(global.layer[get(i)].gtag == 'grid',
+				removelayer(get(global.layer[get(i)].name));
+			);
+		);
+		set(grid, false);
+	</action>
+</krpano>

@@ -1,0 +1,241 @@
+<krpano>
+	
+	<!-- STYLES -->
+	<style name="dhe_leg" type="text" y="45" height="16" css="font-family;Helvetica;font-size:9px;color:0x333333;text-align:center;" bgcolor="0x7ECFDC" vcenter="true" bgroundedge="0" enabled="false" handcursor="false" /> 
+	<style name="dhe_txtbase" type="text" align="lefttop" css="data:css_dhe_editor" bgcolor="0x666666" vcenter="true" /> 
+	<style name="dhe_dist_tit" x="10"  width="50" height="20"  bgroundedge="0" enabled="false" />
+	<style name="dhe_dist_btn" width="20" height="20" bgroundedge="10" />
+	<style name="dhe_dist_val" x="195" width="150" height="20" bgroundedge="0" enabled="false" />
+	<style name="dhe_dist_reset" x="355" width="40" height="20" html="Reset" bgroundedge="0" />
+	<style name="dhe_db1" x="70" html="-" />
+	<style name="dhe_db2" x="95" html="+" /> 
+	<style name="dhe_db3" x="140" html="-" /> 
+	<style name="dhe_db4" x="165" html="+" /> 
+	
+	
+	<!-- CSS -->
+	<data name="css_dhe_editor">
+		font-family;Helvetica;font-size:11px;color:0xffffff;text-align:center;
+	</data>
+	<data name="css_dhe_editor2">
+		font-family;Helvetica;font-size:9px;color:0x333333;text-align:left;margin-left:8px;
+	</data>
+	<data name="css_dhe_editor3">
+		font-family;Helvetica;font-size:14px;color:0xffffff;text-align:center;
+	</data>	
+	<data name="css_dhe_editor4">
+		font-family;Helvetica;font-size:12px;color:0xffffff;text-align:left;
+	</data>	
+	
+	
+	<!-- Editor -->
+	<layer name="dhe_toolbox" type="container" parent="layer[tb_container]" visible="false" keep="true" align="lefttop" x="0" y="30" width="405" height="290" bgcolor="0x333333" bgalpha="1"  >
+		<layer name="dhe_tit" type="text" align="lefttop" x="10" y="10" width="-20" css="data:css_dhe_editor3" bgcolor="0xB69D38" bgroundedge="0" vcenter="true" html="START DISTORTED HOTSPOT EDITOR" onclick="DheTakeName();"  />
+		<layer name="dhe_leg_sort" style="dhe_leg" x="10"  width="50" html="Distortion" />
+		<layer name="dhe_leg_dist" style="dhe_leg" x="70" width="45" html="Tune" />
+		<layer name="dhe_leg_fine" style="dhe_leg" x="140"  width="45" html="Fine Tune" />		
+		<layer name="dhe_leg_val" style="dhe_leg" x="195" width="150" html="Value" />		
+		<layer name="dhe_leg_reset" style="dhe_leg" x="355" width="40" html="Reset" />		
+		
+	<!-- RX -->	
+		<layer name="dhe_rx_tit" style="dhe_dist_tit|dhe_txtbase" y="70" html="RX"  />
+		<layer name="dhe_rx_btn_dec" style="dhe_dist_btn|dhe_txtbase|dhe_db1" y="70" ondown="DheDoDistortion(get(name),rx,dec);" /> 		
+		<layer name="dhe_rx_btn_inc" style="dhe_dist_btn|dhe_txtbase|dhe_db2"  y="70"  ondown="DheDoDistortion(get(name),rx,inc);" /> 
+		<layer name="dhe_rx_btn_dec_fine" style="dhe_dist_btn|dhe_txtbase|dhe_db3" y="70" ondown="DheDoDistortion(get(name),rx,dec,fine);" /> 
+		<layer name="dhe_rx_btn_inc_fine" style="dhe_dist_btn|dhe_txtbase|dhe_db4" y="70" ondown="DheDoDistortion(get(name),rx,inc,fine);" /> 	
+		<layer name="dhe_rx_val" style="dhe_dist_val|dhe_txtbase" y="70" html="0"  />
+		<layer name="dhe_rx_reset" style="dhe_dist_reset|dhe_txtbase" y="70" onclick="DheReset(rx);"  />
+		
+	<!-- RY -->
+		<layer name="dhe_ry_tit" style="dhe_dist_tit|dhe_txtbase" y="100" html="RY"  />
+		<layer name="dhe_ry_btn_dec" style="dhe_dist_btn|dhe_txtbase|dhe_db1" y="100" ondown="DheDoDistortion(get(name),ry,dec);" />
+		<layer name="dhe_ry_btn_inc" style="dhe_dist_btn|dhe_txtbase|dhe_db2" y="100" ondown="DheDoDistortion(get(name),ry,inc);" /> 
+		<layer name="dhe_ry_btn_dec_fine" style="dhe_dist_btn|dhe_txtbase|dhe_db3" y="100" ondown="DheDoDistortion(get(name),ry,dec,fine);" /> 
+		<layer name="dhe_ry_btn_inc_fine" style="dhe_dist_btn|dhe_txtbase|dhe_db4" y="100" ondown="DheDoDistortion(get(name),ry,inc,fine);" /> 	
+		<layer name="dhe_ry_val" style="dhe_dist_val|dhe_txtbase" y="100" html="0"  />
+		<layer name="dhe_ry_reset" style="dhe_dist_reset|dhe_txtbase" y="100" onclick="DheReset(ry);"  />
+	
+	<!-- RZ -->	
+		<layer name="dhe_rz_tit" style="dhe_dist_tit|dhe_txtbase" y="130" html="RZ"  />
+		<layer name="dhe_rz_btn_dec" style="dhe_dist_btn|dhe_txtbase|dhe_db1" y="130" ondown="DheDoDistortion(get(name),rz,dec);" /> 
+		<layer name="dhe_rz_btn_inc" style="dhe_dist_btn|dhe_txtbase|dhe_db2" y="130" ondown="DheDoDistortion(get(name),rz,inc);" /> 
+		<layer name="dhe_rz_btn_dec_fine" style="dhe_dist_btn|dhe_txtbase|dhe_db3" y="130" ondown="DheDoDistortion(get(name),rz,dec,fine);" /> 
+		<layer name="dhe_rz_btn_inc_fine" style="dhe_dist_btn|dhe_txtbase|dhe_db4" y="130" ondown="DheDoDistortion(get(name),rz,inc,fine);" /> 	
+		<layer name="dhe_rz_val" style="dhe_dist_val|dhe_txtbase" y="130" html="0"  />
+		<layer name="dhe_rz_reset" style="dhe_dist_reset|dhe_txtbase" y="130" onclick="DheReset(rz);"  />
+
+	<!-- SCALE -->	
+		<layer name="dhe_scale_tit" style="dhe_dist_tit|dhe_txtbase" y="160" html="SCALE"  />
+		<layer name="dhe_scale_btn_dec" style="dhe_dist_btn|dhe_txtbase|dhe_db1" y="160" ondown="DheDoDistortion(get(name),scale,dec);" /> 		
+		<layer name="dhe_scale_btn_inc" style="dhe_dist_btn|dhe_txtbase|dhe_db2" y="160" ondown="DheDoDistortion(get(name),scale,inc);" /> 
+		<layer name="dhe_scale_btn_dec_fine" style="dhe_dist_btn|dhe_txtbase|dhe_db3" y="160" ondown="DheDoDistortion(get(name),scale,dec,fine);" /> 
+		<layer name="dhe_scale_btn_inc_fine" style="dhe_dist_btn|dhe_txtbase|dhe_db4" y="160" ondown="DheDoDistortion(get(name),scale,inc,fine);" /> 	
+		<layer name="dhe_scale_val" style="dhe_dist_val|dhe_txtbase" y="160" html="0"  />
+		<layer name="dhe_scale_reset" style="dhe_dist_reset|dhe_txtbase" y="160" onclick="DheReset(scale);"  />
+		
+	<!-- ATH / ATV -->
+		<layer name="dhe_val_ath" type="text" align="lefttop" x="10" y="190" width="175" height="16" css="data:css_dhe_editor2" bgcolor="0x67AAB8" vcenter="true" bgroundedge="0" html="" />
+		<layer name="dhe_val_ath_reset" type="text" align="lefttop" x="195" y="190" width="40" height="16" css="data:css_dhe_editor" bgcolor="0x666666" vcenter="true" bgroundedge="0" html="Reset" onclick="set(global.hotspot[get(_activehtsp)].ath, 0);set(global.layer[dhe_val_ath].html, calc:'ATH = ' + global.hotspot[get(_activehtsp)].ath);" />
+		
+		<layer name="dhe_val_atv" type="text" align="lefttop" x="10" y="210" width="175" height="16" css="data:css_dhe_editor2" bgcolor="0x67AAB8" vcenter="true" bgroundedge="0" html="" />
+		<layer name="dhe_val_atv_reset" type="text" align="lefttop" x="195" y="210" width="40" height="16" css="data:css_dhe_editor" bgcolor="0x666666" vcenter="true" bgroundedge="0" html="Reset" onclick="set(global.hotspot[get(global._activehtsp)].atv, 0);set(global.layer[dhe_val_atv].html, calc:'ATV = ' + global.hotspot[get(global._activehtsp)].atv);" />
+		
+	<!-- MASTER RESET -->	
+		<layer name="dhe_resetall" type="text" align="lefttop" x="245" y="190" width="150" height="36" css="data:css_dhe_editor" bgcolor="0x666666" vcenter="true" bgroundedge="0" html="Reset All" onclick="" />
+		
+
+	<!-- PRINT -->
+		<layer name="dhe_btn_print" style="dhe_txtbase" x="10" y="236" width="50" height="50" bgroundedge="0" html="PRINT" onclick="DhePrintCode();" />
+			
+	<!-- HOTSPOT NAME -->
+		<layer name="dhe_activehtsp" type="text" align="lefttop" x="70" y="236" width="325" height="20" css="data:css_dhe_editor4" bgcolor="0x666666" vcenter="true" bgroundedge="0" padding="0 0 0 6"  html="CLICK THE HOTSPOT" enabled="false" />
+
+	<!-- SCENE NAME -->
+		<layer name="dhe_scenename" type="text" align="lefttop" x="70" y="266" width="325" height="20" css="data:css_dhe_editor4" bgcolor="0x666666" vcenter="true" bgroundedge="0" padding="0 0 0 6"  html="SCENE NAME" enabled="false" />
+		
+	</layer>	
+
+	
+	<events name="dhe_newscene" keep="true" onnewscene="set(global.layer[dhe_scenename].html, calc:'Scene Name: ' + global.scene[get(xml.scene)].name)" />
+	
+	
+	<action name="DheTakeName" scope="private:distorted">
+		set(_dheactive, true);
+		set(global.layer[dhe_tit],bgcolor=0x336699, html='STOP DISTORTED HOTSPOT EDITOR', onclick=DheExitEditor());
+		set(global.layer[dhe_activehtsp].bgcolor,0xff0000);
+		
+		delayedcall(0.1,
+			for(set(i,0), i LT global.hotspot.count, inc(i),
+				calc(global.hotspot[get(i)].tmp_onclick, global.hotspot[get(i)].onclick);
+				set(global.hotspot[get(i)].ondown, set(_activehtsp, calc:name);set(_orscale, calc:scale);DheMakeName();Dhedraghotspot());	
+				set(global.hotspot[get(i)].onclick, );
+			);
+		);
+	</action>
+	
+	
+	<action name="DheExitEditor" scope="private:distorted">
+			set(global.layer[dhe_tit],bgcolor=0xB69D38, html='START DISTORTED HOTSPOT EDITOR', onclick=DheTakeName());
+			set(global.layer[dhe_activehtsp],html=calc('CLICK THE HOTSPOT'),bgcolor=0x666666);
+			if(_dheactive,
+				for(set(i,0), i LT global.hotspot.count, inc(i),
+					set(global.hotspot[get(i)].onclick, get(global.hotspot[get(i)].tmp_onclick));
+					set(global.hotspot[get(i)].ondown, );	
+				);
+				set(_dheactive, false);
+			);
+	</action>
+	
+	
+	<action name="DheMakeName" scope="private:distorted">
+        <!-- put all current distortions in the fields -->
+		set(global.layer[dhe_activehtsp],html=calc('Hotspot Name: ' + global._activehtsp),bgcolor=0x008C00);
+		set(global.layer[dhe_resetall].onclick, DheResetAll());
+	</action>
+	
+
+	<action name="DheDoDistortion" >
+		set(_vallayer, calc:'dhe_%2_val');
+		if(%3 == 'dec',
+			asyncloop(pressed,
+				if(%4 == 'fine',
+					ifnot(%2 == scale,
+						dec(hotspot[get(_activehtsp)].%2, 0.05);
+					,
+						dec(hotspot[get(_activehtsp)].%2, 0.0001);
+					);
+				,
+					ifnot(%2 == scale,
+						dec(hotspot[get(_activehtsp)].%2, 0.5);	
+					,
+						dec(hotspot[get(_activehtsp)].%2, 0.005);	
+					);
+				);
+				calc(layer[get(_vallayer)].html, hotspot[get(_activehtsp)].%2);
+			);
+		,
+			asyncloop(pressed,
+				if(%4 == 'fine',
+					ifnot(%2 == scale,
+						inc(hotspot[get(_activehtsp)].%2, 0.05);
+					,
+						inc(hotspot[get(_activehtsp)].%2, 0.0001);
+					);
+				,
+					ifnot(%2 == scale,
+						inc(hotspot[get(_activehtsp)].%2, 0.5);
+					,
+						inc(hotspot[get(_activehtsp)].%2, 0.005);
+					);
+				);
+				calc(layer[get(_vallayer)].html, hotspot[get(_activehtsp)].%2);
+			);
+		);
+	</action>
+	
+	
+	<action name="DheReset" scope="private:distorted">
+		set(_vallayerreset, calc:'dhe_%1_val');
+		if(%1 == scale,
+			calc(global.hotspot[get(global._activehtsp)].%1, global._orscale);
+			calc(global.layer[get(_vallayerreset)].html, global.hotspot[get(global._activehtsp)].%1);	
+		,
+			set(global.hotspot[get(global._activehtsp)].%1,0);
+			calc(global.layer[get(_vallayerreset)].html, global.hotspot[get(global._activehtsp)].%1);	
+		);
+	</action>
+
+	
+	<action name="DheResetAll" scope="private:distorted">
+		set(global.hotspot[get(global._activehtsp)], ath=0,atv=0,rx=0,ry=0,rz=0,scale=calc(global._orscale));
+		set(global.layer[dhe_val_ath].html, calc('ATH = 0'));
+		set(global.layer[dhe_val_atv].html, calc('ATV = 0'));
+		calc(global.layer[dhe_rx_val].html, '0');
+		calc(global.layer[dhe_ry_val].html, '0');
+		calc(global.layer[dhe_rz_val].html, '0');
+		calc(global.layer[dhe_scale_val].html, global._orscale);
+	</action>
+	
+    
+	<action name="DheResetAllExit" scope="private:distorted">
+		set(global.layer[dhe_tit],bgcolor=0xB69D38, html='START DISTORTED HOTSPOT EDITOR', onclick=DheTakeName());
+		set(global.layer[dhe_activehtsp],html=calc('CLICK THE HOTSPOT'),bgcolor=0x666666);
+		set(global.layer[dhe_resetall].onclick, );
+		if(_dheactive,
+			for(set(i,0), i LT global.hotspot.count, inc(i),
+				set(global.hotspot[get(i)].onclick, get(global.hotspot[get(i)].tmp_onclick));
+				set(global.hotspot[get(i)].ondown, );	
+			);
+
+			set(global.layer[dhe_val_ath].html, calc('ATH = 0'));
+			set(global.layer[dhe_val_atv].html, calc('ATV = 0'));
+			calc(global.layer[dhe_rx_val].html, '0');
+			calc(global.layer[dhe_ry_val].html, '0');
+			calc(global.layer[dhe_rz_val].html, '0');
+			calc(global.layer[dhe_scale_val].html, global._orscale);
+		);
+		set(_dheactive, false);
+	</action>
+
+	
+	<action name="Dhedraghotspot" > <!-- scope="private:distorted" -->
+		spheretoscreen(ath, atv, hotspotcenterx, hotspotcentery, calc(mouse.stagex LT stagewidth/2 ? 'l' : 'r'));
+		sub(drag_adjustx, mouse.stagex, hotspotcenterx);
+		sub(drag_adjusty, mouse.stagey, hotspotcentery);
+		asyncloop(pressed,
+			sub(dx, mouse.stagex, drag_adjustx);
+			sub(dy, mouse.stagey, drag_adjusty);
+			screentosphere(dx, dy, ath, atv);
+
+			calc(layer[dhe_val_ath].html, 'ATH = ' + hotspot[get(name)].ath);
+			calc(layer[dhe_val_atv].html, 'ATV = ' + hotspot[get(name)].atv);
+		  );
+	</action>
+	
+	
+	<action name="DhePrintCode" scope="private:distorted">
+		calc(_dheprint, '&#xA;&#xA;' + 'name="' + global.hotspot[get(global._activehtsp)].name + '" ath="' + global.hotspot[get(global._activehtsp)].ath +'" atv="' + global.hotspot[get(global._activehtsp)].atv +'" scale="' + global.hotspot[get(global._activehtsp)].scale +'" rx="' + global.hotspot[get(global._activehtsp)].rx +'" ry="' + global.hotspot[get(global._activehtsp)].ry +'" rz="' + global.hotspot[get(global._activehtsp)].rz +'"' );
+		trace(_dheprint);
+		showlog();
+	</action>
+</krpano>

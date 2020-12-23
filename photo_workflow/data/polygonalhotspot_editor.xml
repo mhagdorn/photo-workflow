@@ -1,0 +1,118 @@
+<krpano>
+	
+	<!-- The new hotspots need a style name for the ouput code. -->	
+	<phe_settings
+		style_name="mypolygonalhotspotstylename"
+	/>			  
+
+	
+	<!-- the style for your hotspot ..ONLY THE NAME WILL BE USED IN THE OUTPUT CODE!!!! -->	
+	<style name="phe_newpoly" fillcolor="0xff0000" fillalpha="0.2" borderwidth="3.0" bordercolor="0xaaaaaa" borderalpha="1.0" onover="tween(fillalpha,1);" onout="tween(fillalpha,0.2);" onclick="" ondown.touch="onover(); asyncloop(pressed, onhover(); );" onup.touch="onout();" />
+	
+	<!-- editor button style -->	
+	<style name="phe_btn" type="text" align="top" width="-20" height="30" bgroundedge="0" vcenter="true" mipmapping="true" oversampling="2" css="data:css_phebtn" />	
+	
+	
+	<!-- CSS -->	
+	<data name="css_phetit">
+		font-family:Helvetica; font-size:12px; color:#ffffff; text-align:center; line-height:14px;
+	</data>
+	<data name="css_phebtn">
+		font-family:Helvetica; font-size:10px; color:#222222; text-align:center; line-height:10px;
+	</data>
+	<data name="css_phe2">
+		font-family:Helvetica; font-size:10px; color:#ffffff; text-align:center; line-height:10px;
+	</data>
+	<data name="css_phehelp">
+		font-family:Helvetica; font-size:13px; color:#222222; text-align:left; line-height:13px;
+	</data>
+	
+	
+	<!-- the editor -->	
+	<layer name="phe_box" type="container" keep="true" parent="layer[tb_container]" visible="false" align="lefttop" x="0" y="30" width="200" height="175" bgcolor="0x333333" bgalpha="1" onloaded="set(phehs, 0);" >
+		<layer name="phe_btntit" type="text" enabled="true" handcursor="false" align="top" width="-20" height="40"  y="10" vcenter="true" mipmapping="true" oversampling="2" css="data:css_phetit" bgroundedge="0" bgcolor="0xB69D38" html="POLYGONAL HOTSPOT EDITOR" />
+		<layer name="phe_btn1" style="phe_btn" y="60" html="START NEW HOTSPOT" onclick="PheStartdraw();" />
+		<layer name="phe_btn3" type="text" enabled="true" handcursor="false" align="top" width="-20" height="30" bgroundedge="0" vcenter="true" mipmapping="true" oversampling="2" css="data:css_phe2" bg="false"  y="100" html="PRESS SPACE TO FINISH HOTSPOT" />	
+		<layer name="phe_btn2" style="phe_btn" y="140" html="SHOW CODE or PRESS L" onclick="set(phedrawing, false);PhePrint();" />
+	</layer>	
+	
+
+
+	<!--
+	 ***************** THE ENGINE ***********
+	-->
+	<events 
+		onkeydown="if(global.keycode == 32, PheStopdraw(get(global.phehsname)));"
+		onclick="if(phedrawing == true, PheAddpoint());"
+	/>
+
+	<action name="PheStartdraw" scope="private:poly">
+		inc(global.phehs);
+		set(global.phedrawing, true);
+		txtadd(global.phehsname, 'hs', get(global.phehs));
+
+		addhotspot(get(global.phehsname));
+		global.hotspot[get(global.phehsname)].loadstyle(phe_newpoly);
+		set(global.hotspot[get(global.phehsname)].enabled, false);
+		set(pheid, 0);
+	</action>
+
+	<action name="PheStopdraw" scope="private:poly">
+		set(global.phedrawing, false);
+		PheMakeCode(%1);
+	</action>
+
+	<action name="PheAddpoint" scope="private:poly">
+		screentosphere(global.mouse.x, global.mouse.y, toh, tov);
+		set(global.hotspot[get(global.phehsname)],point[get(pheid)].ath=get(global.toh),point[get(pheid)].atv=get(global.tov));
+		if(_phepoints,
+			calc(_phepoints, _phepoints + '&#xA;&#09;' + global.data[html_point].content + 'ath="' + toh + '" atv="' + tov + '"' + global.data[html_/exit].content);
+		,
+			calc(_phepoints, '&#09;' + global.data[html_point].content + 'ath="' + toh + '" atv="' + tov + '"' + global.data[html_/exit].content);
+		);
+		updatescreen();
+		PheMouseMove();
+		inc(pheid);
+	</action>
+
+	<action name="PheMouseMove" scope="private:poly">
+		screentosphere(global.mouse.x, global.mouse.y, global.toh, global.tov);
+		set(global.hotspot[get(global.phehsname)].point[get(pheid)].ath, get(global.toh));
+		set(global.hotspot[get(global.phehsname)].point[get(pheid)].atv, get(global.tov));
+		updatescreen();
+		if(global.phedrawing == true, delayedcall(0.0, PheMouseMove()));
+	</action>
+
+	<action name="PheMakeCode" scope="private:poly">
+		set(_phestyle, calc:global.phe_settings.style_name);
+
+		if(_phetoprint,
+			calc(_phetoprint, _phetoprint + '&#xA;&#xA;' + global.data[html_hotspot].content + ' name="%1" style="' + _phestyle + '"' + global.data[html_/close].content + '&#xA;' + _phepoints + '&#xA;' + global.data[html_hotspotend].content);
+		,
+			calc(_phetoprint, '&#xA;' + global.data[html_hotspot].content + ' name="%1" style="' + _phestyle + '"' + global.data[html_/close].content + '&#xA;' + _phepoints + '&#xA;' + global.data[html_hotspotend].content);
+		);
+
+		set(global.hotspot[%1].enabled, true);
+		set(_phepoints, );
+	</action>
+
+
+	<action name="PheExit" scope="private:poly">
+		delete(_phetoprint);set(pheid, 0);set(global.phedrawing, false);
+	</action>
+
+	<data name="html_point"><![CDATA[<point ]]></data>
+	<data name="html_/close"><![CDATA[ >]]></data>
+	<data name="html_/exit"><![CDATA[ />]]></data>	
+	<data name="html_hotspot"><![CDATA[<hotspot ]]></data>
+	<data name="html_hotspotend"><![CDATA[</hotspot>]]></data>
+	<data name="html_quoteopen"><![CDATA[<!-- ]]></data>
+	<data name="html_quoteend"><![CDATA[ -->]]></data>	
+
+	<action name="PhePrint" scope="private:poly">
+		if(_phetoprint,
+			trace(_phetoprint);
+			showlog();
+		);
+	</action>
+</krpano>	

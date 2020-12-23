@@ -1,0 +1,143 @@
+﻿<krpano>
+
+
+    <action name="StartStickies" autorun="onstart" scope="private:stickies">
+        set(stickies, false);
+        calc(scrollhei, (global.stickie.amount / global.stickie.rowamount) * (global.stickie.height + global.stickie.space) + 100);
+    </action>
+
+    <action name="ShowStickies" scope="private:stickies">
+        ifnot(stickies,
+            set(global.tb_helpscroll, false);
+			removelayer(stf_bg, true);
+            set(stickies, true);
+            set(global.layer[stickieloader].alpha,1);
+            delayedcall(0.1,
+                PrepareStickies();
+            );
+        ,
+            set(stickies, false);
+            set(global.layer[stickieloader].alpha,0);
+            removelayer(stickiecontent);
+            removelayer(bg_global, true);
+            tween(global.layer[vtlogo].alpha,0,0.7);
+        );
+    </action>
+    
+    
+    <layer name="stickieloader" keep="true" type="text" align="lefttop" alpha="0" autoalpha="true" width="100%" height="100%" bgcolor="get:st_col.col1" vcenter="true" html="LOADING STICKIES..." css="data:css_stickies_loading" bgalpha="0.8" zorder="200" onclick="showlog();" /> 
+    
+    
+    <layer name="vtlogo" url="VT.png" keep="true" autoalpha="true" alpha="0" align="rightbottom" x="10" y="10" width="30" height="prop" zorder="100" onclick="openurl(https://www.virtualtuur.com,_blank);" >
+        <layer name="stickiecredits" type="text" align="left" edge="right" x="-10" bg="false" html="Stickies © by Virtual Tuur" css="font-family:Josefin;font-size:9spx;color:#ffffff;text-align:center;" onclick="openurl(https://www.virtualtuur.com,_blank);" />
+    </layer>
+    
+    
+    <action name="PrepareStickies" scope="private:stickies">
+        set(sr, 1);     
+        set(src, 0);    
+        set(sc, 0);     
+        CreateStickies(bg_global);
+        CreateStickies(bg_sub, bg_global);
+        CreateStickies(bg_stickies, bg_global);
+        CreateStickies(stickie_scrollmask,bg_stickies);
+        CreateStickies(bg_stickies_scroll);
+        CreateStickies(stftxt,bg_stickies_scroll);
+
+        calc(global.layer[bg_stickies_scroll].height, scrollhei);   
+        MakeStickie(get(global.stickie.amount));   
+    </action>
+    
+    <action name="CreateStickies" scope="private:stickies">
+        addlayer(%1);
+        global.layer[%1].loadstyle(%1);
+        
+        ifnot(%2 == null,
+            set(global.layer[%1].parent, layer[%2]);
+        );
+    </action>
+    
+    <action name="MakeStickie" scope="private:stickies">
+        set(global.layer[bg_stickies].width, calc:((global.stickie.rowamount + 1)* global.stickie.space) + global.stickie.rowamount * global.stickie.width); 
+    
+        if(sc LT %1,
+            add(sc,1);  
+            calc(s, 'stickie_' + sc);  <!-- stickie name -->
+
+            calc(sx, global.stickie.space + ((src*global.stickie.width)+(src*global.stickie.space)));
+            calc(sy, ((sr-1) * (global.stickie.space + global.stickie.height)) + global.stickie.space);
+            copy(st, calc('stickie_tits.s' + sc));
+            
+            calc(spos, 'p' + sc); 
+            copy(sposval, calc('global.stickie_pos.' + spos));
+            
+            addlayer(get(s));
+            copy(sl,global.layer[get(s)]);
+            sl.loadstyle(stick);
+
+            calc(spt, 'sttp_' + sc);
+            addlayer(get(spt)); 
+            global.layer[get(spt)].loadstyle(stickie_pos_txt);
+            calc(global.layer[get(spt)].parent, 'layer[' + s + ']');
+            calc(global.layer[get(spt)].html, 'p' + sc);
+
+            calc(sidt, 'sttid_' + sc);
+            addlayer(get(sidt)); 
+            global.layer[get(sidt)].loadstyle(stickie_id_txt);
+            calc(global.layer[get(sidt)].parent, 'layer[' + s + ']');
+            calc(global.layer[get(sidt)].html, sposval);
+
+            copy(global.layer[get(s)].html, calc('global.stickies[data].stickie[get(sposval)].title'));
+            ifnot(sposval == null,
+                set(global.layer[get(s)].bgcolor, get(global.stickies[data].stickie[get(sposval)].color));
+            ,
+                set(global.layer[get(s)].bgcolor, calc(global.st_col.col1));
+            );
+
+            add(src,1);
+            set(rowmax, calc:global.layer[bg_stickies].width - 2*global.stickie.width);
+            if(sx LT rowmax,
+                set(sl,x=calc(sx),y=calc(sy));
+            ,
+                inc(sr);
+                set(src, 0);
+                set(sl,x=calc(sx),y=calc(sy));
+            );
+
+            MakeStickie(%1);
+        ,     
+            for(set(i,0),i LT global.layer.count, inc(i), 
+                if(global.layer[get(i)].tag == 'stickie', 
+                    set(global.layer[get(i)].alpha,1);
+                );
+            );
+            delayedcall(0.1,
+                tween(global.layer[stickieloader].alpha,0,0.2,easeoutquad);
+                tween(global.layer[bg_global].alpha,1,1,easeoutquad);
+                tween(global.layer[vtlogo].alpha,1,1,easeoutquad);
+            );
+        );
+        
+    </action>
+    
+    <action name="MakeStickieContent" scope="private:stickies">
+        subtxt(bdy, %1,8);
+        set(global.layer[bg_sub].alpha,1); 
+        
+        copy(bdyp,calc('global.stickie_pos.p' + bdy));  
+        set(blabla, calc('toolbox/html/' + global.stickies[data].stickie[get(bdyp)].ref + '.html'));
+
+        calc(hio, global.data[html_iframe_open].content);
+        calc(hic, global.data[html_iframe_close].content);
+        calc(hcl, global.data[html_close].content); 
+       
+        calc(stickiebody, hio + ' src=&#34;' + blabla + '&#34; width=&#34;100&#37;&#34; height=&#34;100&#37;&#34; frameborder=&#34;0&#34;' + hic);  
+        
+        calc(global.data[html_example_code].content, stickiebody);
+        addlayer(stickiecontent);
+        global.layer[stickiecontent].loadstyle(html_div);
+        set(global.layer[stickiecontent].width, calc:global.layer[bg_stickies].pixelwidth);  
+
+    </action>
+
+</krpano>

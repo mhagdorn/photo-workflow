@@ -1,0 +1,128 @@
+﻿<krpano>
+
+    <stickie
+        amount="101" 
+        width="70"
+        height="50"
+        space="10"
+        rowamount="9"
+    />
+    
+            <!--
+                yellow = FCFF6F
+                green= ABFF6E
+                red = F9BEAE
+                blue = 92EFFB
+            -->
+
+    <st_col
+        col1="0xFCFF6F"
+        col2="0xABFF6E"
+        col3="0xF9BEAE"
+        col4="0x92EFFB"        
+    />    
+
+
+    <stickies name="data">
+        <stickie name="s1" ref="layers"             title="LAYERS"                      color="calc:st_col.col2" />
+        <stickie name="s2" ref="hotspots"           title="HOTSPOTS"                    color="calc:st_col.col2" />
+        <stickie name="s3" ref="polygonal_hotspots" title="POLYGONAL[br]HOTSPOTS"       color="calc:st_col.col2" />    
+        <stickie name="s4" ref="actions"            title="calc:'data:html_action'"     color="calc:st_col.col3" />       
+        <stickie name="s5" ref="js_action"          title="ACTION[br]JAVASCRIPT"        color="calc:st_col.col3" />       
+        <stickie name="s6" ref="css"                title="CSS"                         color="calc:st_col.col4" />       
+        <stickie name="s7" ref="include"            title="INCLUDE"                     color="calc:st_col.col2" />        
+        <stickie name="s8" ref="events"             title="calc:'data:html_events'"     color="calc:st_col.col2" />        
+        <stickie name="s9" ref="data"               title="calc:'data:html_data'"       color="calc:st_col.col2" />        
+        <stickie name="s10" ref="display"           title="calc:'data:html_display'"    color="calc:st_col.col2" />        
+        <stickie name="s11" ref="set"               title="calc:'data:html_set'"        color="calc:st_col.col3" />        
+        <stickie name="s12" ref="if"                title="IF"                          color="calc:st_col.col3" />        
+        <stickie name="s13" ref="device"            title="calc:'data:html_device'"     color="calc:st_col.col3" />        
+        <stickie name="s14" ref="for_loop"          title="FOR LOOP"                    color="calc:st_col.col3" />        
+        <stickie name="s15" ref="callwith"          title="CALLWITH"                    color="calc:st_col.col3" />        
+        <stickie name="s16" ref="area"              title="calc:'data:html_area'"       color="calc:st_col.col2" />        
+        <stickie name="s17" ref="loadscene"         title="LOADSCENE"                   color="calc:st_col.col3" />        
+        <stickie name="s18" ref="orientation"       title="ORIENTATION"                 color="calc:st_col.col3" />        
+        <stickie name="s19" ref="blend_modes"       title="BLEND[br]MODES"              color="calc:st_col.col3" />        
+        <stickie name="s20" ref="tween_types"       title="TWEEN[br]TYPES"              color="calc:st_col.col3" />        
+        <stickie name="s21" ref="ascii"             title="ASCII"                       color="calc:st_col.col4" />        
+        <stickie name="s22" ref="html"              title="HTML"                        color="calc:st_col.col4" />        
+
+        <stickie name="s32" ref="dummy"             title="TEST"                        color="calc:st_col.col1" />        
+    </stickies>
+
+    <!-- positions -->
+    <stickie_pos      
+        p1="s3"
+        p2="s1"
+        p3="s2"
+        p4="s9"
+        p5="s10"
+        p6="s16"
+        p7="s7"
+        p8="s8"
+
+        p10="s5"
+        p11="s11"
+        p12="s12"
+        p13="s13"
+        p14="s14"
+        p15="s15"
+        p16="s4"
+        p17="s17"
+        p18="s18"
+        p19="s19"
+        p20="s20"    
+
+        p22="s22"
+        p23="s6" 
+        p24="s21"
+        p41="s32"
+
+    />
+
+    
+    
+    <data name="html_action"><![CDATA[ACTION]]></data>
+    <data name="html_events"><![CDATA[EVENTS]]></data>    
+    <data name="html_data"><![CDATA[DATA]]></data>    
+    <data name="html_display"><![CDATA[DISPLAY]]></data>        
+    <data name="html_set"><![CDATA[SET]]></data>        
+    <data name="html_device"><![CDATA[DEVICE]]></data>            
+    <data name="html_area"><![CDATA[AREA]]></data>            
+    <data name="html_iframe_open"><![CDATA[<iframe]]></data>            
+    <data name="html_iframe_close"><![CDATA[></iframe>]]></data>                
+
+    
+    
+    <data name="css_stickie">
+        font-family:Josefin;font-size:10px;color:#333333;text-align:center;
+    </data>
+    <data name="css_stickie_btn">
+        font-family:Josefin;font-size:13px;color:#ffffff;text-align:center;
+    </data>
+    <data name="css_stickie_pos">
+        font-family:Helvetica;font-size:7px;color:0x666666;text-align:left;
+    </data>
+    <data name="css_stickie_id">
+        font-family:Helvetica;font-size:7px;color:0x666666;text-align:left;
+    </data>
+
+    <data name="css_stickies_loading">
+        font-family:Helvetica;font-size:37px;color:0x000000;text-align:center;
+    </data>
+
+
+
+    
+    <style name="bg_global" type="container" align="center" keep="true" autoalpha="true" alpha="0" width="100%" height="100%" bgcolor="0x000000" bgalpha="0.6" bgcapture="true" onclick="ShowStickies"/>
+    <style name="bg_sub" type="container" keep="true" autoalpha="true" alpha="0" width="100%" height="100%" bgcolor="0x000000" bgalpha="0.6" zorder="99" bgcapture="true" handcursor="false" onclick="removelayer(stickiecontent);tween(alpha,0);" />
+    <style name="bg_stickies" type="container" keep="true" align="center" width="" height="80%" bgcolor="0x336699" bgalpha="0"  />
+    <style name="stickie_scrollmask" type="container" keep="true" parent="layer[bg_stickies]" align="lefttop" x="0" y="10" width="100%" height="-20" background="false" border="false"  oversampling="1.0" mipmapping="false" maskchildren="true" /> 
+    <style name="bg_stickies_scroll" url="scrollarea.js" keep="true" parent="layer[stickie_scrollmask]" align="lefttop" width="100%" height="" bgcolor="0xffffff" bgalpha="0.4" mwheel="true" direction="v" overscroll="0" onscroll=""  />	
+    <style name="stftxt" type="text" keep="true" align="lefttop" x="0" y="-9" width="100%" height="" background="false" border="false"  />
+    <style name="stick" keep="true" type="text" tag="stickie" align="lefttop" parent="layer[stftxt]" autoalpha="true" alpha="0" width="get:stickie.width" height="get:stickie.height" bgborder="1 0x336699 1"  bgalpha="1" css="data:css_stickie" padding="10 0 0 0" onover="set(zorder,90);tween(rotate,-15,0.2);" onout="tween(rotate,0,0.2);set(zorder,80);" interactivecontent="true" onclick="MakeStickieContent(get(name));" /> <!-- bgcolor="get:stickie.bgcolor"  -->
+    
+    <style name="stickie_pos_txt" type="text"  enabled="false" parent="" align="leftbottom" x="1" y="1" bg="false" bgalpha="1" html="koe" css="data:css_stickie_pos" zorder="100" />
+    <style name="stickie_id_txt" type="text"  enabled="false" parent="" align="rightbottom" x="1" y="1" bg="false" bgalpha="1" html="koe" css="data:css_stickie_pos" zorder="100" />
+
+</krpano>

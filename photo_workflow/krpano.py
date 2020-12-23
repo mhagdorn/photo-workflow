@@ -41,7 +41,7 @@ class KRPano:
         if not outdir.exists():
             outdir.mkdir(parents=True)
         if not oc.exists():
-            logging.debug(f'copying hotspot image {ic} to {oc}')
+            logging.debug(f'copying data file {ic} to {oc}')
             shutil.copy(ic,oc)
 
     def hotspots(self,pano,outdir):
@@ -171,6 +171,13 @@ class KRPano:
             include = xml.etree.ElementTree.SubElement(et.getroot(), 'include')
             include.attrib['url'] = "partialpano_helpertool.xml"
             self.add_data("partialpano_helpertool.xml",outdir)
+
+            for t in ['grid.xml','polygonalhotspot_editor.xml','stickie_data.xml',
+                      'stickies.xml','numbers.xml','scrollingtext.xml','stickie_engine.xml',
+                      'toolbox.xml','distortedhotspot_editor.xml']:
+                self.add_data(t,outdir/'plugins')
+            toolbox = xml.etree.ElementTree.SubElement(et.getroot(), 'include')
+            toolbox.attrib['url'] = "plugins/toolbox.xml"
 
         et.write(outxml)
             
