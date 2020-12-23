@@ -38,6 +38,8 @@ class KRPano:
         oc = outdir/dfile
         ic = Path(pkg_resources.resource_filename('photo_workflow',
                                                   'data/'+dfile))
+        if not outdir.exists():
+            outdir.mkdir(parents=True)
         if not oc.exists():
             logging.debug(f'copying hotspot image {ic} to {oc}')
             shutil.copy(ic,oc)
@@ -47,6 +49,7 @@ class KRPano:
             outdir.mkdir(parents=True)
 
         self.add_data('hs_circle.png',outdir)
+        self.add_data('showtext.xml',outdir/'plugins')
         if 'hotspots' in pano:
             with open(outdir/Path(pano['pname']+'_hotspots.xml'),'w') as hotspots:
                 hotspots.write("""<krpano>
