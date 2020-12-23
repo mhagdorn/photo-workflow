@@ -64,17 +64,15 @@ class KRPano:
                onup.touch="onout();"
                />
   <textstyle name="STYLE7"
-             font="Arial" fontsize="14" padding="4" bold="false
+             font="Arial" fontsize="14" padding="4" bold="false"
              edge="left" textalign="left" xoffset="15" yoffset="0"
              />
 """)
-                nspot = 1
-                for h in pano["hotspots"]:
+                for nspot,h in enumerate(pano["hotspots"]):
                     hotspots.write(f'''  <hotspot name="spot{nspot}" style="letter" type="image" url="hs_circle.png"
            scale="0.3" ath="{h['ath']}" atv="{h['atv']}"
            onhover="showtext({h['description']}, STYLE7);"/>
 ''')
-                    nspot +=1
                 hotspots.write('</krpano>')
 
     def run(self,pano,outdir, debug=False, html=False):
