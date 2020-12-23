@@ -67,6 +67,24 @@ class KRPano:
              font="Arial" fontsize="14" padding="4" bold="false"
              edge="left" textalign="left" xoffset="15" yoffset="0"
              />
+	<style name="button_style"
+               type="text"
+               bgcolor="0x000000"
+               bgalpha="0.5"
+               bgroundedge="0"
+               css="calc:'color:#FFFFFF;font-size:' + 20 + 'px;'"
+               padding="calc:6 + ' ' + 10"
+               />
+
+	<layer name="hotspots" style="button_style" html="Toggle Hotspots"     align="lefttop" y="10" x="10"   onclick="toggle_hotspots();"     />
+
+	<action name="toggle_hotspots">
+          for(set(i,0), i LT hotspot.count, inc(i),
+	  if (hotspot[get(i)].alpha == 0,
+	  set(hotspot[get(i)].alpha ,1);,
+	  set(hotspot[get(i)].alpha ,0););
+          );
+        </action>
 """)
                 for nspot,h in enumerate(pano["hotspots"]):
                     hotspots.write(f'''  <hotspot name="spot{nspot}" style="letter" type="image" url="hs_circle.png"
