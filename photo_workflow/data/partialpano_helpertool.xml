@@ -1,0 +1,160 @@
+<krpano>
+
+	<!--
+		A small helper tool for finding the field-of-view coverage and
+		vertical-offset for partial-pano-images.
+	-->
+
+	<style name="buttoncontrol" type="text" height="22" bgcolor="0xFFFFFF" bgborder="1 0x000000 0.12" bgroundedge="1" bgcapture="true" vcenter="true" css="text-align:center;" ondown.addevent="set(bgcolor,0xDDDDDD);" onup.addevent="if(!hovering,set(bgcolor,0xFFFFFF),set(bgcolor,0xEEEEEE));" onover.addevent="if(!pressed,set(bgcolor,0xEEEEEE));" onout.addevent="if(!pressed,set(bgcolor,0xFFFFFF));" updatecontrol="copy(val,get(buttonvariable)); buttonformat(); copy(html,val);" onloaded.addevent="updatecontrol();" />
+	<style name="slidercontrol" type="container" height="22" bgcolor="0xFFFFFF" bgborder="1 0x000000 0.12" bgroundedge="1" bgcapture="true" handcursor="false" onloaded.addevent="slidercontrol_init();" />
+
+	<style name="slidercontrol_caption" type="text" align="left" edge="right" x="50" enabled="false" />
+	<style name="slidercontrol_bar" type="container" align="left" x="55" width="-98" height="2" bgcolor="0xEEEEEE" bgalpha="1.0" bgborder="1 0x000000 0.12" bgcapture="true" handcursor="false" ondown="slidercontrol_dragging()" />
+	<style name="slidercontrol_grip" type="container" align="left" edge="center" x="100%" width="7" height="7" bgcolor="0xEEEEEE" bgalpha="1" bgborder="1 0x000000 0.4" bgroundedge="5" bgcapture="true" capture="false" />
+	<style name="slidercontrol_text" type="text" align="right" x="2" enabled="false" />
+
+
+	<action name="slidercontrol_init" scope="local">
+		addlayer(auto, caption);
+		addlayer(auto, bar);
+		addlayer(auto, grip);
+		addlayer(auto, text);
+
+		set(caption, keep=get(caller.keep), parent=get(caller.name), html=get(caller.slidercaption));
+		set(bar, keep=get(caller.keep), parent=get(caller.name), sliderlayer=get(caller), griplayer=get(grip), textlayer=get(text));
+		set(grip, keep=get(caller.keep), parent=get(bar.name));
+		set(text, keep=get(caller.keep), parent=get(caller.name));
+
+		caption.loadstyle(slidercontrol_caption);
+		bar.loadstyle(slidercontrol_bar);
+		grip.loadstyle(slidercontrol_grip);
+		text.loadstyle(slidercontrol_text);
+
+		set(events[get(caller.name)].keep, get(caller.keep));
+		set(events[get(caller.name)].onnewpano, calc('delayedcall(0.0, callwith(layer['+bar.name+'], slidercontrol_update() ));'));
+
+		callwith(bar, slidercontrol_update() );
+	</action>
+
+	<action name="slidercontrol_update" scope="local">
+		copy(val,get(caller.sliderlayer.slidervariable));
+		txtsplit(caller.sliderlayer.sliderrange, ',', valmin, valmax);
+		clamp(val, valmin, valmax);
+		calc(caller.griplayer.x, ((val-valmin)/(valmax-valmin) * 100.0) + '%');
+		caller.sliderlayer.sliderformat();
+		copy(caller.textlayer.html, val);
+	</action>
+
+	<action name="slidercontrol_dragging" scope="local">
+		asyncloop(caller.pressed,
+			layertoscreen(get(caller.name), 0,0, lx,ly);
+			calc(p, clamp((mouse.stagex - lx) / caller.pixelwidth, 0.0, 1.0) );
+			calc(caller.griplayer.x, (p * 100.0) + '%');
+			txtsplit(caller.sliderlayer.sliderrange, ',', valmin, valmax);
+			calc(val, valmin + p * (valmax-valmin));
+			copy(get(caller.sliderlayer.slidervariable), val);
+			caller.sliderlayer.sliderformat();
+			copy(caller.textlayer.html, val);
+			updateobject(true,true);
+			updatescreen();
+		);
+	</action>
+
+
+	<layer name="partialpano_helpertool" keep="true" type="container" align="righttop" x="10" y="10" width="200" height="184" bgcolor="0xFFFFFF" bgalpha="1.0" bgborder="0 0x00000 0.7" bgroundedge="1" bgshadow="0 1 4 0x000000 1.0" bgcapture="true" handcursor="false">
+
+		<layer name="ppht_info" type="text" html="Partialpano Helper Tool" align="top" y="8" x="0" ondown="ppht_layerdragging(get(layer[partialpano_helpertool]));" />
+
+		<layer name="ppht_slider_hfov" y="32" align="lefttop" x="10" width="-20" style="slidercontrol" slidercaption="HFOV:"    slidervariable="image.hfov"    sliderrange="0,360"   sliderformat="roundval(val,1);" />
+		<layer name="ppht_slider_vfov" y="62" align="lefttop" x="10" width="-20" style="slidercontrol" slidercaption="VFOV:"    slidervariable="image.vfov"    sliderrange="0,180"   sliderformat="roundval(val,1);" />
+		<layer name="ppht_slider_voff" y="92" align="lefttop" x="10" width="-20" style="slidercontrol" slidercaption="VOffset:" slidervariable="image.voffset" sliderrange="-45,+45" sliderformat="roundval(val,1);if(val GT 0, txtadd(val,'+',get(val)));" />
+		
+		<layer name="ppht_button_view" y="122" align="lefttop" x="10" width="-20" style="buttoncontrol" buttonvariable="view.limitview" buttonformat="calc(val,'Limitview: ' + val);" onclick="switch(view.limitview, 'auto', 'lookto', 'off'); updatecontrol(); updatescreen();" />
+		<layer name="ppht_button_lines" y="152" align="lefttop" x="10" width="-20" style="buttoncontrol" buttonvariable="helperlines" helperlines="false" buttonformat="calc(val,'Helper Lines: '+(val ? 'on' : 'off'));" onclick="switch(helperlines); if(helperlines, add_helper_lines(), remove_helper_lines() ); updatecontrol();" />
+
+		<layer name="ppht_resize_left"  type="container" align="lefttop"  width="5" height="100%" bgcapture="true" onloaded="jscall( caller.sprite.style.cursor = 'ew-resize'; );" ondown="ppht_layer_resizing(get(layer[partialpano_helpertool]),'left');" />
+		<layer name="ppht_resize_right" type="container" align="righttop" width="5" height="100%" bgcapture="true" onloaded="jscall( caller.sprite.style.cursor = 'ew-resize'; );" ondown="ppht_layer_resizing(get(layer[partialpano_helpertool]),'right');" />
+
+	</layer>
+
+
+	<action name="ppht_layerdragging" scope="localonly" args="layertodrag">
+		copy(backup_align, layertodrag.align);
+		copy(backup_edge, layertodrag.backup_edge);
+		layertodrag.changeorigin(lefttop, lefttop);
+		set(layertodrag.align, lefttop);
+		set(layertodrag.edge, lefttop);
+		layertodrag.updatepos();
+		copy(start_lx, layertodrag.pixelx);
+		copy(start_ly, layertodrag.pixely);
+		copy(start_mx, global.mouse.x);
+		copy(start_my, global.mouse.y);
+		asyncloop(caller.pressed,
+			calc(layertodrag.x, start_lx + global.mouse.x - start_mx);
+			calc(layertodrag.y, start_ly + global.mouse.y - start_my);
+			clamp(layertodrag.x, 1, calc(global.stagewidth - layertodrag.pixelwidth - 1));
+			clamp(layertodrag.y, 1, calc(global.stageheight - layertodrag.pixelheight - 1));
+		  ,
+			layertodrag.changeorigin(get(backup_align), get(backup_edge));
+		);
+	</action>
+
+
+	<action name="ppht_layer_resizing" scope="localonly" args="layertodrag, resizeside">
+		copy(backup_align, layertodrag.align);
+		copy(backup_edge, layertodrag.backup_edge);
+		if(resizeside == 'left',
+			set(fixededge, right);
+			calc(sidescale, -1);
+		  ,
+			set(fixededge, left);
+			calc(sidescale, +1);
+		);
+		layertodrag.changeorigin(get(fixededge),get(fixededge));
+		set(layertodrag.align, get(fixededge));
+		set(layertodrag.edge, get(fixededge));
+		layertodrag.updatepos();
+		copy(start_lx, layertodrag.pixelx);
+		copy(start_ly, layertodrag.pixely);
+		copy(start_lw, layertodrag.pixelwidth);
+		copy(start_mx, global.mouse.x);
+		copy(start_my, global.mouse.y);
+		asyncloop(caller.pressed,
+			calc(layertodrag.width, max(start_lw + sidescale * (global.mouse.x - start_mx), 150) );
+		  ,
+			layertodrag.changeorigin(get(backup_align), get(backup_edge));
+		);
+	</action>
+	
+	
+	<action name="add_helper_lines" scope="local">
+		set(steps,16);
+		for(set(j,0), j LT 4, inc(j),
+			addhotspot(auto,horizon);
+			set(horizon, ishelperline=true, keep=true, polyline=true, bordercolor=0x00FFFF, borderwidth=3, borderalpha=0.5);
+			for(set(i,0), i LT steps, inc(i),
+				calc(p, (j/4) + i/steps/4);
+				calc(horizon.point[get(i)].ath, p * 360 - 180);
+				calc(horizon.point[get(i)].atv, 0);
+				addhotspot(auto,hline);
+				set(hline, ishelperline=true, keep=true, polyline=true, bordercolor=0xFFFFFF, borderwidth=1.5, borderalpha=0.4);
+				calc(hline.point[0].ath, p * 360 - 180);
+				calc(hline.point[0].atv, -80);
+				calc(hline.point[1].ath, p * 360 - 180);
+				calc(hline.point[1].atv, +80);
+			);
+			calc(p, (j/4) + i/steps/4);
+			calc(horizon.point[get(i)].ath, p * 360 - 180);
+			calc(horizon.point[get(i)].atv, 0);
+		);
+	</action>
+	
+	<action name="remove_helper_lines" scope="local">
+		calc(i, hotspot.count - 1);
+		loop(i GE 0,
+			if(hotspot[get(i)].ishelperline == true, removehotspot(get(i)); );
+			dec(i);
+		);
+	</action>
+
+</krpano>

@@ -34,10 +34,10 @@ class KRPano:
                 raise RuntimeError(f'no such file {fname} or {pname}')
         return pname
 
-    def add_data(self,outdir):
-        oc = outdir/'hs_circle.png'
+    def add_data(self,dfile,outdir):
+        oc = outdir/dfile
         ic = Path(pkg_resources.resource_filename('photo_workflow',
-                                                  'data/hs_circle.png'))
+                                                  'data/'+dfile))
         if not oc.exists():
             logging.debug(f'copying hotspot image {ic} to {oc}')
             shutil.copy(ic,oc)
@@ -46,7 +46,7 @@ class KRPano:
         if not outdir.exists():
             outdir.mkdir(parents=True)
 
-        self.add_data(outdir)
+        self.add_data('hs_circle.png',outdir)
         if 'hotspots' in pano:
             with open(outdir/Path(pano['pname']+'_hotspots.xml'),'w') as hotspots:
                 hotspots.write("""<krpano>
@@ -169,6 +169,7 @@ class KRPano:
 
             include = xml.etree.ElementTree.SubElement(et.getroot(), 'include')
             include.attrib['url'] = "partialpano_helpertool.xml"
+            self.add_data("partialpano_helpertool.xml",outdir)
 
         et.write(outxml)
             

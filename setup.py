@@ -11,7 +11,7 @@ setup(name='photo-workflow',
       author_email='magnus.hagdorn@marsupium.org',
       url='https://github.com/mhagdorn/photo-workflow',
       packages=['photo_workflow'],
-      package_data={'photo_workflow': ['data/*.png']},
+      package_data={'photo_workflow': ['data/*.png','data/*.xml']},
       include_package_data = True,
       entry_points={
           'console_scripts': [
