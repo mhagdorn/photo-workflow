@@ -11,9 +11,42 @@ import pkg_resources
 
 from .config import read_config
 
-class KRPano:
-    def __init__(self,krpanotools, panoramas, template):
+class KRPanoBase:
+    def __init__(self,krpanotools):
         self._krpanotools = Path(krpanotools)
+    @property
+    def krpanotools(self):
+        return self._krpanotools
+
+    def run(self,cmd,args):
+        cmd =  [str(self.krpanotools),cmd] + args
+        logging.debug('running command: '+' '.join(cmd))
+
+        result = subprocess.run(cmd, capture_output=True)
+        if result.returncode != 0:
+            msg = []
+            for l in result.stdout.split(b'\n'):
+                if len(l) > 0:
+                    msg.append(l)
+            raise RuntimeError(b' '.join(msg).decode())
+        else:
+            for l in result.stdout.split(b'\n'):
+                if len(l)>0:
+                    logging.debug(l.decode())
+
+class KRViewer(KRPanoBase):
+    def run(self,viewer,domains):
+        if not viewer.parent.exists():
+            viewer.parent.mkdir(parents=True)
+        krpano_args = ["-noep", "-nolu", "-noex"]
+        for d in domains:
+            krpano_args.append(f"-domain={d}")
+        krpano_args.append(f"-o={viewer}")
+        super().run('protect', krpano_args)
+
+class KRPano(KRPanoBase):
+    def __init__(self,krpanotools, panoramas, template):
+        super().__init__(krpanotools)
         self._panoramas = Path(panoramas)
         self._template = Path(template)
 
@@ -22,7 +55,7 @@ class KRPano:
         if self._template.exists():
             return self._template
         else:
-            return Path(self._krpanotools.parent,'templates',self._template)
+            return Path(self.krpanotools.parent,'templates',self._template)
         
     def pname(self,fname):
         fname = Path(fname)
@@ -155,21 +188,7 @@ class KRPano:
                 krpano_args.append(f"-{o}={pano[o]}") 
 
         # run krpano
-        cmd = [str(self._krpanotools),'makepano'] + krpano_args + [str(inpano)]
-        logging.debug('running command: '+' '.join(cmd))
-
-        result = subprocess.run(cmd, capture_output=True)
-        if result.returncode != 0:
-            msg = []
-            for l in result.stdout.split(b'\n'):
-                if len(l) > 0:
-                    msg.append(l)
-            raise RuntimeError(b' '.join(msg).decode())
-        else:
-            for l in result.stdout.split(b'\n'):
-                if len(l)>0:
-                    logging.debug(l.decode())
-
+        super().run('makepano',krpano_args + [str(inpano)])
 
         et = xml.etree.ElementTree.parse(outxml)
         root = et.getroot()
@@ -206,6 +225,8 @@ def main():
     parser.add_argument('-c','--config',help='read configuration from file')
     parser.add_argument('-d','--debug',action="store_true",default=False,
                         help="add debug functionality to panorama")
+    parser.add_argument('-D','--domain',action='append',
+                        help="generate viewer for domains, multiple domains can be specified")
     parser.add_argument('-H','--html',action="store_true",default=False,
                         help="generate html file")
     parser.add_argument('-s','--hotspots',action="store_true",default=False,
@@ -229,6 +250,9 @@ def main():
 
     if args.hotspots:
         krpano.hotspots(pano,args.output_dir)
+    elif args.domain is not None:
+        krviewer = KRViewer(cfg['krpano']['tools'])
+        krviewer.run(args.output_dir/'krpano.js',args.domain)
     else:
         krpano.run(pano,args.output_dir, debug=args.debug, html=args.html)
             
