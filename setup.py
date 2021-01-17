@@ -5,7 +5,7 @@ from setuptools import setup
 setup(name='photo-workflow',
       python_requires='>=3',
       install_requires = ['easywebdav','jinja2'],
-      version='0.1',
+      version='0.2',
       description='marsupium photo workflow helpers',
       author='Magnus Hagdorn',
       author_email='magnus.hagdorn@marsupium.org',
