@@ -255,13 +255,15 @@ class KRPano(KRPanoBase):
             
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("input",default="panoramas.cfg",
+    parser.add_argument("input", nargs='?',
                         metavar="FILE",help="name of input file")
     parser.add_argument('-c','--config',help='read configuration from file')
     parser.add_argument('-d','--debug',action="store_true",default=False,
                         help="add debug functionality to panorama")
     parser.add_argument('-D','--domain',action='append',
                         help="generate viewer for domains, multiple domains can be specified")
+    parser.add_argument('--js-name',default='krpano.js',
+                        help='name of krpano javascript name, default: krpano.js')
     parser.add_argument('-H','--html',action="store_true",default=False,
                         help="generate html file")
     parser.add_argument('-s','--hotspots',action="store_true",default=False,
@@ -272,7 +274,6 @@ def main():
     args = parser.parse_args()
     
     cfg = read_config(args.config)
-    pano = yaml.load(open(args.input,'r'), Loader=yaml.CLoader)
 
     if args.debug:
         level=logging.DEBUG
@@ -283,17 +284,24 @@ def main():
     krpano = KRPano(cfg['krpano']['tools'],cfg['directories']['panoramas'],
                     cfg['krpano']['template'])
 
-    if args.hotspots:
-        krpano.hotspots(pano,args.output_dir)
-    elif args.domain is not None:
+    if args.domain is not None:
         krviewer = KRViewer(cfg['krpano']['tools'])
-        krviewer.run(args.output_dir/'krpano.js',args.domain)
+        krviewer.run(args.output_dir/args.js_name,args.domain)
     else:
-        krpano.run(pano,args.output_dir, debug=args.debug)
+        if args.input is None:
+            parser.error('no input specified')
+    
+        pano = yaml.load(open(args.input,'r'), Loader=yaml.CLoader)
 
-    if args.html:
-        with open(args.output_dir/(pano['pname']+'.html'),'w') as out:
-            out.write(template.render(**pano))
+    
+        if args.hotspots:
+            krpano.hotspots(pano,args.output_dir)
+        else:
+            krpano.run(pano,args.output_dir, debug=args.debug)
+
+        if args.html:
+            with open(args.output_dir/(pano['pname']+'.html'),'w') as out:
+                out.write(template.render(**pano))
             
 if __name__ == '__main__':
     main()
