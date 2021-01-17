@@ -1,0 +1,18 @@
+Source: photo-workflow
+Section: python
+Priority: optional
+Maintainer: Magnus Hagdorn <magnus.hagdorn@ed.ac.uk>
+Uploaders: Magnus Hagdorn <magnus.hagdorn@ed.ac.uk>
+Build-Depends: debhelper-compat (= 12),
+	       dh-python,
+	       python3-all
+Standards-Version: 4.5.0
+Homepage: https://github.com/mhagdorn/photo-workflow
+Vcs-Git: https://github.com/mhagdorn/photo-workflow.git
+Vcs-Browser: https://github.com/mhagdorn/photo-workflow
+
+Package: photo-workflow
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3-easywebdav, python3-jinja2, python3-yaml
+Description: marsupium photo workflow helpers
+ useful scripts to automate parts of the marsupium photo workflow
