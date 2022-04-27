@@ -1,4 +1,4 @@
-__all__ = []
+__all__ = ["KRPano"]
 
 import argparse, sys, os
 import logging
