@@ -20,6 +20,7 @@ setup(name='photo-workflow',
               'photo-download-gpx = photo_workflow.getgpx:main',
               'photo-archive = photo_workflow.archive:main',
               'photo-krpano = photo_workflow.krpano:main',
+              'photo-scale = photo_workflow.scale:main',
               ],
       },
 
