@@ -10,6 +10,7 @@ import xml.etree.ElementTree
 import pkg_resources
 from jinja2 import Template
 from .config import read_config
+from .scale import scale
 
 template = Template("""
 <!DOCTYPE html>
@@ -178,7 +179,7 @@ class KRPano(KRPanoBase):
             if not outpreview.exists() or \
                inpreview.stat().st_ctime > outpreview.stat().st_ctime:
                 logging.debug(f'copying preview {inpreview} to {outpreview}')
-                shutil.copy(inpreview,outpreview)
+                scale(inpreview,outpreview)
 
         # handle twitter card
         if 'twittercard' in pano and len(pano['twittercard'])>0:

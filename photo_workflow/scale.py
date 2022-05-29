@@ -4,6 +4,14 @@ from PIL import Image
 import numpy
 
 
+def scale(inname, outname, long_side=1500):
+    image = Image.open(inname)
+    scale = min(long_side / max(image.size), 1)
+    new_size = numpy.array(image.size)*scale
+    new_image = image.resize(new_size.astype(int))
+    new_image.save(outname)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--long-side', type=int, default=1500,
@@ -16,13 +24,8 @@ def main():
 
     for p in args.image:
         out = p.parent / Path(args.prefix + p.name)
-        image = Image.open(p)
-        scale = args.long_side / max(image.size)
-        if scale > 1:
-            continue
-        new_size = numpy.array(image.size)*scale
-        new_image = image.resize(new_size.astype(int))
-        new_image.save(out)
+        if not out.exists():
+            scale(p, out, long_side=args.long_side)
 
 
 if __name__ == '__main__':
