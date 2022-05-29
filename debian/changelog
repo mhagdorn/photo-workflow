@@ -1,5 +1,11 @@
-photo-workflow (0.2-1) UNRELEASED; urgency=medium
+photo-workflow (0.3-1) UNRELEASED; urgency=medium
+
+  * with new program to scale images 
+
+ -- Magnus Hagdorn <magnus.hagdorn@ed.ac.uk>  Sun, 29 May 2022 12:52:45 +0100
+
+photo-workflow (0.2-1) focal; urgency=medium
 
   * photo-workflow
 
- -- Magnus Hagdorn <magnus.hagdorn@ed.ac.uk>  Sun, 17 Jan 2021 21:00:34 +0000
+ -- Magnus Hagdorn <magnus.hagdorn@ed.ac.uk>  Sun, 29 May 2022 12:52:39 +0100
