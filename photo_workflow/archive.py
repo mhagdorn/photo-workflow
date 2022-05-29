@@ -12,7 +12,7 @@ from .config import read_config
 logging.basicConfig(level=logging.DEBUG)
 
 def generate_tasks(indir,outdir,pattern):
-    raw = ['.RW2','.nef']
+    raw = ['.RW2','.nef','.NEF','.ORF']
     for f in indir.glob(str(pattern/'*')):
         if f.suffix in raw:
             xf = Path(str(f)+'.xmp')
@@ -74,6 +74,7 @@ def main():
     parser.add_argument('-y','--year',type=int,help="process photos for YEAR")
     parser.add_argument('-m','--month',type=int,help="process photos for MONTH")
     parser.add_argument('-d','--day',type=int,help="process photos for DAY")
+    parser.add_argument('-p','--path',help="find all raw pictures under path")
 
     args = parser.parse_args()
 
@@ -86,23 +87,27 @@ def main():
         year = TODAY.year
     else:
         year = args.year
-    
-    if args.year is None and args.month is None and args.day is None:
-        # today
-        inpattern = '{}-{:02d}-{:02d}*'.format(TODAY.year,TODAY.month,TODAY.day)
-    else:
-        if args.month is None:
-            if args.day is None:
-                inpattern = '{}-*'.format(year)
-            else:
-                inpattern = '{}-{:02d}-{:02d}*'.format(year,TODAY.month,args.day)
-        else:
-            if args.day is None:
-                inpattern = '{}-{:02d}-*'.format(year,args.month)
-            else:
-                inpattern = '{}-{:02d}-{:02d}*'.format(year,args.month,args.day)
 
-    inpattern = Path(str(year),inpattern)
+    if args.path is not None:
+        indir = Path(args.path)
+        inpattern = Path('**')
+    else:
+        if args.year is None and args.month is None and args.day is None:
+            # today
+            inpattern = '{}-{:02d}-{:02d}*'.format(TODAY.year,TODAY.month,TODAY.day)
+        else:
+            if args.month is None:
+                if args.day is None:
+                    inpattern = '{}-*'.format(year)
+                else:
+                    inpattern = '{}-{:02d}-{:02d}*'.format(year,TODAY.month,args.day)
+            else:
+                if args.day is None:
+                    inpattern = '{}-{:02d}-*'.format(year,args.month)
+                else:
+                    inpattern = '{}-{:02d}-{:02d}*'.format(year,args.month,args.day)
+
+        inpattern = Path(str(year),inpattern)
 
     lock = threading.Lock()
     tasks = Queue()
